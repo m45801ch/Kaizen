@@ -297,6 +297,7 @@
   }
   .conv-text:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(28,25,23,.06)}
   .copy-btn{margin-top:6px;width:100%}
+  input[type=range]{width:100%;accent-color:var(--primary);cursor:pointer}
   footer{text-align:center;color:var(--muted);font-size:11px;padding:20px 0 8px;max-width:880px;margin:0 auto}
 
   @media screen and (max-width:980px){
@@ -446,6 +447,19 @@
         <button type="button" class="btn btn-outline btn-sm copy-btn" data-copy="conv-after">複製</button>
       </div>
     </div>
+
+    <div class="panel" id="compressPanel">
+      <div class="panel-head"><span class="bar"></span>圖片壓縮</div>
+      <label class="check-row" style="margin-top:0">
+        <input type="checkbox" id="compressToggle">
+        <span>上傳時壓縮圖片（存成 JPEG，品質 0.85）</span>
+      </label>
+      <div class="field" style="margin-top:10px">
+        <label for="compressSlider">最大邊長：<span id="compressVal">1600</span> px</label>
+        <input type="range" id="compressSlider" min="400" max="4000" step="100" value="1600">
+        <div class="hint">超過最大邊長的圖片會自動縮小，列印與 PDF 依此解析度輸出；關閉則保留原始解析度。</div>
+      </div>
+    </div>
   </aside>
 
   <!-- ===== 右側：提案表單 ===== -->
@@ -570,7 +584,9 @@
     orient:   "kai.gen.orient.v1",
     imgsize:  "kai.gen.imgsize.v1",
     dtitle:   "kai.gen.dtitle.v1",
-    logo:     "kai.gen.logo.v1"
+    logo:     "kai.gen.logo.v1",
+    compress:     "kai.gen.compress.v1",
+    compressMax:  "kai.gen.compressMax.v1"
   };
 
   var MODELS = {
@@ -624,7 +640,9 @@
     models: {},
     catalog: {},
     override: localStorage.getItem(STORE.override) === "1",
-    images: { before: [], after: [] }
+    images: { before: [], after: [] },
+    compress: localStorage.getItem(STORE.compress) !== "0",
+    compressMax: parseInt(localStorage.getItem(STORE.compressMax) || "1600", 10) || 1600
   };
   state.keys.gemini = localStorage.getItem(STORE.key + ":gemini") || "";
   state.keys.openai = localStorage.getItem(STORE.key + ":openai") || "";
@@ -1036,16 +1054,25 @@
           showStatus("error", "「" + f.name + "」超過 15MB，已略過。");
           return;
         }
-        var reader = new FileReader();
-        reader.onload = function(e){
+        var done = function(dataUrl, mime, w, h){
           state.images[side].push({
-            id: uid(), name: f.name, dataUrl: e.target.result,
-            mime: f.type, side: side
+            id: uid(), name: f.name, dataUrl: dataUrl,
+            mime: mime, side: side, w: w, h: h
           });
           render();
           persistImages();
         };
-        reader.readAsDataURL(f);
+        if (state.compress){
+          compressImage(f, state.compressMax, function(dataUrl, w, h){
+            done(dataUrl, "image/jpeg", w, h);
+          });
+        } else {
+          var reader = new FileReader();
+          reader.onload = function(e){
+            done(e.target.result, f.type, 0, 0);
+          };
+          reader.readAsDataURL(f);
+        }
       });
     }
 
@@ -1076,6 +1103,42 @@
     });
 
     return render;
+  }
+
+  /* ---------- 圖片壓縮 ---------- */
+  var COMPRESS_QUALITY = 0.85;
+
+  function compressImage(file, maxDim, cb){
+    var reader = new FileReader();
+    reader.onload = function(e){
+      var img = new Image();
+      img.onload = function(){
+        var w = img.width;
+        var h = img.height;
+        var scale = Math.min(1, maxDim / Math.max(w, h));
+        if (scale < 1){
+          w = Math.max(1, Math.round(w * scale));
+          h = Math.max(1, Math.round(h * scale));
+        }
+        var canvas = document.createElement("canvas");
+        canvas.width = w;
+        canvas.height = h;
+        var ctx = canvas.getContext("2d");
+        ctx.fillStyle = "#fff";
+        ctx.fillRect(0, 0, w, h);
+        ctx.drawImage(img, 0, 0, w, h);
+        cb(canvas.toDataURL("image/jpeg", COMPRESS_QUALITY), w, h);
+      };
+      img.onerror = function(){ cb(e.target.result, 0, 0); };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function renderCompress(){
+    $("compressToggle").checked = state.compress;
+    $("compressSlider").value = state.compressMax;
+    $("compressVal").textContent = state.compressMax;
   }
 
   /* ---------- 照片 IndexedDB 儲存 ---------- */
@@ -1212,6 +1275,16 @@
     localStorage.setItem(STORE.override, state.override ? "1" : "0");
   });
 
+  $("compressToggle").addEventListener("change", function(){
+    state.compress = this.checked;
+    localStorage.setItem(STORE.compress, state.compress ? "1" : "0");
+  });
+  $("compressSlider").addEventListener("input", function(){
+    state.compressMax = parseInt(this.value, 10) || 1600;
+    $("compressVal").textContent = state.compressMax;
+    localStorage.setItem(STORE.compressMax, String(state.compressMax));
+  });
+
   $els.generateBtn.addEventListener("click", generateAll);
 
   document.querySelectorAll(".copy-btn").forEach(function(btn){
@@ -1243,7 +1316,11 @@
     renderApiCollapse();
   });
 
-  $els.printBtn.addEventListener("click", function(){ window.print(); });
+  $els.printBtn.addEventListener("click", function(){
+    var t = ($("f-title") && $("f-title").value.trim()) || "改善提案表";
+    document.title = t;
+    window.print();
+  });
 
   var orientStyleEl = null;
   function applyOrientation(orient, persist){
@@ -1415,6 +1492,7 @@
   setupSizeControls("after");
   renderProvider();
   renderApiCollapse();
+  renderCompress();
   loadForm();
   loadImages();
   if (state.keys[state.provider]) setTimeout(refreshModels, 300);
