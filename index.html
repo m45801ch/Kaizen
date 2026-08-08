@@ -87,13 +87,6 @@
   }
   .key-wrap .toggle:hover{background:var(--primary-soft);color:var(--text)}
 
-  .provider-tabs{display:flex;background:var(--line);border-radius:9px;padding:3px;gap:3px;margin-bottom:14px}
-  .provider-tabs button{
-    flex:1;border:none;background:transparent;padding:7px 0;border-radius:7px;
-    font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .15s;
-  }
-  .provider-tabs button.active{background:#fff;color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.08)}
-
   .hint{font-size:11px;color:var(--muted);line-height:1.7;margin-top:4px}
   .hint a{color:var(--accent);text-decoration:none}
   .hint a:hover{text-decoration:underline}
@@ -393,9 +386,14 @@
         <span class="chevron" id="apiChevron">▾</span>
       </div>
       <div class="panel-body">
-        <div class="provider-tabs" id="providerTabs">
-          <button type="button" data-provider="gemini" class="active">Google Gemini</button>
-          <button type="button" data-provider="openai">OpenAI</button>
+        <div class="field">
+          <label for="providerSelect">AI 供應商</label>
+          <select id="providerSelect">
+            <option value="gemini">Google Gemini</option>
+            <option value="openai">OpenAI</option>
+            <option value="openrouter">OpenRouter</option>
+            <option value="groq">Groq</option>
+          </select>
         </div>
 
         <div class="field">
@@ -458,15 +456,20 @@
     </div>
 
     <div class="panel" id="compressPanel">
-      <div class="panel-head"><span class="bar"></span>圖片壓縮</div>
-      <label class="check-row" style="margin-top:0">
-        <input type="checkbox" id="compressToggle">
-        <span>上傳時壓縮圖片（存成 JPEG，品質 0.85）</span>
-      </label>
-      <div class="field" style="margin-top:10px">
-        <label for="compressSlider">最大邊長：<span id="compressVal">1600</span> px</label>
-        <input type="range" id="compressSlider" min="400" max="4000" step="100" value="1600">
-        <div class="hint">超過最大邊長的圖片會自動縮小，列印與 PDF 依此解析度輸出；關閉則保留原始解析度。</div>
+      <div class="panel-head collapsible" id="compressPanelHead" role="button" tabindex="0" title="點擊收合／展開">
+        <span class="bar"></span>圖片壓縮
+        <span class="chevron" id="compressChevron">▸</span>
+      </div>
+      <div class="panel-body">
+        <label class="check-row" style="margin-top:0">
+          <input type="checkbox" id="compressToggle">
+          <span>上傳時壓縮圖片（存成 JPEG，品質 0.85）</span>
+        </label>
+        <div class="field" style="margin-top:10px">
+          <label for="compressSlider">最大邊長：<span id="compressVal">1600</span> px</label>
+          <input type="range" id="compressSlider" min="400" max="4000" step="100" value="1600">
+          <div class="hint">超過最大邊長的圖片會自動縮小，列印與 PDF 依此解析度輸出；關閉則保留原始解析度。</div>
+        </div>
       </div>
     </div>
   </aside>
@@ -479,7 +482,7 @@
         <option value="landscape">A4 橫向</option>
       </select>
       <button class="btn btn-outline btn-sm" id="printBtn">列印 / 匯出 PDF</button>
-      <button class="btn btn-outline btn-sm" id="resetBtn">清空重置</button>
+      <button class="btn btn-outline btn-sm" id="resetBtn">一鍵清除全部</button>
     </div>
 
     <div class="doc" id="doc">
@@ -610,16 +613,35 @@
       { id: "gpt-4o-mini",   label: "GPT-4o mini（經濟快速）" },
       { id: "gpt-4.1",       label: "GPT-4.1" },
       { id: "gpt-4.1-mini",  label: "GPT-4.1 mini" }
+    ],
+    openrouter: [
+      { id: "openai/gpt-4o-mini",       label: "OpenRouter · GPT-4o mini（經濟）" },
+      { id: "google/gemini-2.5-flash-lite", label: "OpenRouter · Gemini 2.5 Flash Lite" },
+      { id: "anthropic/claude-3.5-sonnet",  label: "OpenRouter · Claude 3.5 Sonnet" },
+      { id: "meta-llama/llama-3.3-70b-instruct", label: "OpenRouter · Llama 3.3 70B" }
+    ],
+    groq: [
+      { id: "llama-3.3-70b-versatile", label: "Groq · Llama 3.3 70B Versatile" },
+      { id: "llama-3.1-8b-instant",    label: "Groq · Llama 3.1 8B Instant" },
+      { id: "gemma2-9b-it",            label: "Groq · Gemma2 9B" }
     ]
   };
   var HINTS = {
     gemini: '金鑰在 <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a> 取得',
-    openai: '金鑰在 <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">platform.openai.com/api-keys</a> 取得'
+    openai: '金鑰在 <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">platform.openai.com/api-keys</a> 取得',
+    openrouter: '金鑰在 <a href="https://openrouter.ai/settings/keys" target="_blank" rel="noopener">openrouter.ai/settings/keys</a> 取得',
+    groq: '金鑰在 <a href="https://console.groq.com/keys" target="_blank" rel="noopener">console.groq.com/keys</a> 取得'
+  };
+  var KEY_PLACEHOLDERS = {
+    gemini: "貼上 Google Gemini API Key…",
+    openai: "貼上 OpenAI API Key…",
+    openrouter: "貼上 OpenRouter API Key…",
+    groq: "貼上 Groq API Key…"
   };
 
   var $ = function(id){ return document.getElementById(id); };
   var $els = {
-    providerTabs: $("providerTabs"),
+    providerSelect: $("providerSelect"),
     apiKey: $("apiKey"),
     toggleKey: $("toggleKey"),
     keyHint: $("keyHint"),
@@ -675,24 +697,25 @@
     FORM_FIELDS.forEach(function(f){ autoResize($(f.id)); });
     ANALYSIS_ENTRIES.forEach(function(e){ renderAnalysis(e); });
   }
-  function clearForm(){
+function clearForm(){
     FORM_FIELDS.forEach(function(f){ $(f.id).value = ""; });
+    CONV_IDS.forEach(function(id){ $(id).value = ""; });
+    state.editSide.before = "right";
+    state.editSide.after = "right";
     saveForm();
     $("docTitle").textContent = "改善提案表";
     saveTitle();
     FORM_FIELDS.forEach(function(f){ autoResize($(f.id)); });
+    CONV_IDS.forEach(function(id){ autoResize($(id)); });
     ANALYSIS_ENTRIES.forEach(function(e){ renderAnalysis(e); });
   }
 
   /* ---------- 側欄 ---------- */
   function renderProvider(){
-    $els.providerTabs.querySelectorAll("button").forEach(function(b){
-      b.classList.toggle("active", b.dataset.provider === state.provider);
-    });
+    $els.providerSelect.value = state.provider;
     renderModelOptions();
     $els.apiKey.value = state.keys[state.provider] || "";
-    $els.apiKey.placeholder = state.provider === "gemini"
-      ? "貼上 Google Gemini API Key…" : "貼上 OpenAI API Key…";
+    $els.apiKey.placeholder = KEY_PLACEHOLDERS[state.provider];
     $els.keyHint.innerHTML = HINTS[state.provider];
     $els.modelHint.textContent = "輸入 API Key 後自動載入全部可用模型";
     $els.overrideFill.checked = state.override;
@@ -755,6 +778,43 @@
     return list;
   }
 
+  async function fetchOpenRouterModels(key){
+    var res = await fetch("https://openrouter.ai/api/v1/models", {
+      headers: { "Authorization": "Bearer " + key }
+    });
+    var data;
+    try { data = await res.json(); } catch(e){ data = null; }
+    if (!res.ok){
+      var msg = data && data.error && data.error.message ? data.error.message : "HTTP " + res.status;
+      throw new Error(msg);
+    }
+    var list = (data.data || [])
+      .filter(function(m){ return !/embedding/i.test(m.id); })
+      .map(function(m){
+        return { id: m.id, label: (m.name && m.name !== m.id ? m.name + " · " : "") + m.id };
+      });
+    list.sort(function(a,b){ return a.id < b.id ? -1 : 1; });
+    return list;
+  }
+
+  async function fetchGroqModels(key){
+    var res = await fetch("https://api.groq.com/openai/v1/models", {
+      headers: { "Authorization": "Bearer " + key }
+    });
+    var data;
+    try { data = await res.json(); } catch(e){ data = null; }
+    if (!res.ok){
+      var msg = data && data.error && data.error.message ? data.error.message : "HTTP " + res.status;
+      throw new Error(msg);
+    }
+    var list = (data.data || [])
+      .map(function(m){ return m.id; })
+      .filter(function(id){ return !/(whisper|embedding|tts)/i.test(id); })
+      .map(function(id){ return { id: id, label: id }; });
+    list.sort(function(a,b){ return a.id < b.id ? -1 : 1; });
+    return list;
+  }
+
   async function refreshModels(){
     var provider = state.provider;
     var key = $els.apiKey.value.trim();
@@ -766,7 +826,11 @@
     try{
       var list = provider === "gemini"
         ? await fetchGeminiModels(key)
-        : await fetchOpenAIModels(key);
+        : provider === "openai"
+        ? await fetchOpenAIModels(key)
+        : provider === "openrouter"
+        ? await fetchOpenRouterModels(key)
+        : await fetchGroqModels(key);
       state.catalog[provider] = list;
       renderModelOptions(provider);
       $els.modelHint.textContent = "已載入 " + list.length + " 個可用模型（輸入後會自動更新）";
@@ -901,6 +965,71 @@
     return parseJSON(text);
   }
 
+  async function callOpenRouter(key, model, prompt){
+    var res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + key
+      },
+      body: JSON.stringify({
+        model: model,
+        temperature: 0.7,
+        messages: [
+          { role: "system", content: "你是企業改善提案撰寫專家，一律只回傳 JSON 物件，不要加任何額外文字。" },
+          { role: "user", content: prompt }
+        ]
+      })
+    });
+    var data;
+    try { data = await res.json(); }
+    catch(e){ data = null; }
+    if (!res.ok){
+      var msg = data && data.error && data.error.message ? data.error.message : "HTTP " + res.status;
+      throw new Error(msg);
+    }
+    var text = data && data.choices && data.choices[0]
+      && data.choices[0].message && data.choices[0].message.content;
+    if (!text) throw new Error("OpenRouter 未回傳可用內容。");
+    return parseJSON(text);
+  }
+
+  async function callGroq(key, model, prompt){
+    var res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + key
+      },
+      body: JSON.stringify({
+        model: model,
+        temperature: 0.7,
+        messages: [
+          { role: "system", content: "你是企業改善提案撰寫專家，一律只回傳 JSON 物件，不要加任何額外文字。" },
+          { role: "user", content: prompt }
+        ]
+      })
+    });
+    var data;
+    try { data = await res.json(); }
+    catch(e){ data = null; }
+    if (!res.ok){
+      var msg = data && data.error && data.error.message ? data.error.message : "HTTP " + res.status;
+      throw new Error(msg);
+    }
+    var text = data && data.choices && data.choices[0]
+      && data.choices[0].message && data.choices[0].message.content;
+    if (!text) throw new Error("Groq 未回傳可用內容。");
+    return parseJSON(text);
+  }
+
+  function callForProvider(provider, key, model, prompt){
+    if (provider === "gemini") return callGemini(key, model, prompt);
+    if (provider === "openai") return callOpenAI(key, model, prompt);
+    if (provider === "openrouter") return callOpenRouter(key, model, prompt);
+    return callGroq(key, model, prompt);
+  }
+
   function showStatus(kind, html){
     $els.status.className = "status show";
     if (kind === "loading"){
@@ -976,12 +1105,8 @@
 
     try{
       var results = await Promise.all([
-        state.provider === "gemini"
-          ? callGemini(key, model, promptFormal)
-          : callOpenAI(key, model, promptFormal),
-        state.provider === "gemini"
-          ? callGemini(key, model, promptColloquial)
-          : callOpenAI(key, model, promptColloquial)
+        callForProvider(state.provider, key, model, promptFormal),
+        callForProvider(state.provider, key, model, promptColloquial)
       ]);
       var formal = results[0];
       var colloquial = results[1];
@@ -1252,14 +1377,13 @@
   }
 
   /* ---------- 事件 ---------- */
-  $els.providerTabs.addEventListener("click", function(e){
-    var btn = e.target.closest("button[data-provider]");
-    if (!btn || btn.dataset.provider === state.provider) return;
-    state.provider = btn.dataset.provider;
+  $els.providerSelect.addEventListener("change", function(){
+    var next = $els.providerSelect.value;
+    if (next === state.provider) return;
+    state.provider = next;
     localStorage.setItem(STORE.provider, state.provider);
     renderProvider();
-    apiCollapsed = !state.keys[state.provider];
-    renderApiCollapse();
+    apiCollapse.setCollapsed(true);
     if (state.keys[state.provider]) refreshModels();
   });
 
@@ -1319,16 +1443,22 @@
     });
   });
 
-  var apiPanel = $("apiPanel");
-  var apiCollapsed = !state.keys[state.provider];
-  function renderApiCollapse(){
-    apiPanel.classList.toggle("collapsed", apiCollapsed);
-    $("apiChevron").textContent = apiCollapsed ? "▸" : "▾";
+  var collapseState = {};
+  function setupCollapse(panelId, headId, chevronId, defaultCollapsed){
+    collapseState[panelId] = !!defaultCollapsed;
+    function render(){
+      $(panelId).classList.toggle("collapsed", collapseState[panelId]);
+      $(chevronId).textContent = collapseState[panelId] ? "▸" : "▾";
+    }
+    $(headId).addEventListener("click", function(){
+      collapseState[panelId] = !collapseState[panelId];
+      render();
+    });
+    render();
+    return { setCollapsed: function(v){ collapseState[panelId] = !!v; render(); } };
   }
-  $("apiPanelHead").addEventListener("click", function(){
-    apiCollapsed = !apiCollapsed;
-    renderApiCollapse();
-  });
+  var apiCollapse = setupCollapse("apiPanel", "apiPanelHead", "apiChevron", true);
+  var compressCollapse = setupCollapse("compressPanel", "compressPanelHead", "compressChevron", true);
 
   $els.printBtn.addEventListener("click", function(){
     var t = ($("f-title") && $("f-title").value.trim()) || "改善提案表";
@@ -1525,7 +1655,6 @@
   setupSizeControls("before");
   setupSizeControls("after");
   renderProvider();
-  renderApiCollapse();
   renderCompress();
   loadForm();
   loadImages();
