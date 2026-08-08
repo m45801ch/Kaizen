@@ -297,6 +297,9 @@
   }
   .conv-text:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(28,25,23,.06)}
   .copy-btn{margin-top:6px;width:100%}
+  .conv-btns{display:flex;gap:6px;margin-top:6px}
+  .conv-btns .btn{flex:1}
+  .clear-btn:hover{color:var(--danger);border-color:var(--danger)}
   input[type=range]{width:100%;accent-color:var(--primary);cursor:pointer}
   footer{text-align:center;color:var(--muted);font-size:11px;padding:20px 0 8px;max-width:880px;margin:0 auto}
 
@@ -439,12 +442,18 @@
       <div class="conv-box before">
         <div class="conv-label">改善前（問題描述）</div>
         <textarea class="conv-text" id="conv-before" rows="3" placeholder="描述改善前的問題…"></textarea>
-        <button type="button" class="btn btn-outline btn-sm copy-btn" data-copy="conv-before">複製</button>
+        <div class="conv-btns">
+          <button type="button" class="btn btn-outline btn-sm copy-btn" data-copy="conv-before">複製</button>
+          <button type="button" class="btn btn-outline btn-sm clear-btn" data-clear="before">清除</button>
+        </div>
       </div>
       <div class="conv-box after">
         <div class="conv-label">改善後（對策描述）</div>
         <textarea class="conv-text" id="conv-after" rows="3" placeholder="描述改善的對策…"></textarea>
-        <button type="button" class="btn btn-outline btn-sm copy-btn" data-copy="conv-after">複製</button>
+        <div class="conv-btns">
+          <button type="button" class="btn btn-outline btn-sm copy-btn" data-copy="conv-after">複製</button>
+          <button type="button" class="btn btn-outline btn-sm clear-btn" data-clear="after">清除</button>
+        </div>
       </div>
     </div>
 
@@ -641,6 +650,7 @@
     catalog: {},
     override: localStorage.getItem(STORE.override) === "1",
     images: { before: [], after: [] },
+    editSide: { before: "right", after: "right" },
     compress: localStorage.getItem(STORE.compress) !== "0",
     compressMax: parseInt(localStorage.getItem(STORE.compressMax) || "1600", 10) || 1600
   };
@@ -942,15 +952,19 @@
       showStatus("error", "請先在上方輸入 API Key。");
       return;
     }
-    var srcBefore = $("f-before").value.trim() || $("conv-before").value.trim();
-    var srcAfter = $("f-after").value.trim() || $("conv-after").value.trim();
+    var srcBefore = state.editSide.before === "left"
+      ? ($("conv-before").value.trim() || $("f-before").value.trim())
+      : ($("f-before").value.trim() || $("conv-before").value.trim());
+    var srcAfter = state.editSide.after === "left"
+      ? ($("conv-after").value.trim() || $("f-after").value.trim())
+      : ($("f-after").value.trim() || $("conv-after").value.trim());
     if (!srcBefore && !srcAfter){
       showStatus("error", "請先輸入改善前或改善後的描述（左側口語化欄位或右側欄位皆可）。");
       return;
     }
     var data = getFormData();
-    if (!data.before && srcBefore) data.before = srcBefore;
-    if (!data.after && srcAfter) data.after = srcAfter;
+    data.before = srcBefore;
+    data.after = srcAfter;
 
     var model = state.models[state.provider];
     var promptFormal = buildPrompt(data);
@@ -1358,6 +1372,8 @@
 
   FORM_FIELDS.forEach(function(f){
     $(f.id).addEventListener("input", function(){
+      if (f.id === "f-before") state.editSide.before = "right";
+      if (f.id === "f-after") state.editSide.after = "right";
       saveForm();
       autoResize($(f.id));
       if (ANALYSIS_BY_ID[f.id]) renderAnalysis(ANALYSIS_BY_ID[f.id]);
@@ -1365,8 +1381,26 @@
     autoResize($(f.id));
   });
   CONV_IDS.forEach(function(id){
-    $(id).addEventListener("input", function(){ autoResize($(id)); });
+    $(id).addEventListener("input", function(){
+      if (id === "conv-before") state.editSide.before = "left";
+      if (id === "conv-after") state.editSide.after = "left";
+      autoResize($(id));
+    });
     autoResize($(id));
+  });
+  document.querySelectorAll(".clear-btn").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var side = btn.dataset.clear;
+      if (!confirm("確定要清除「改善" + (side === "before" ? "前" : "後") + "」的內容（含右側對應欄位）嗎？")) return;
+      $("conv-" + side).value = "";
+      $("f-" + side).value = "";
+      autoResize($("conv-" + side));
+      autoResize($("f-" + side));
+      var entry = ANALYSIS_BY_ID["f-" + side];
+      if (entry) renderAnalysis(entry);
+      saveForm();
+      hideStatus();
+    });
   });
   ANALYSIS_ENTRIES.forEach(function(e){
     $(e.preview).addEventListener("click", function(){
