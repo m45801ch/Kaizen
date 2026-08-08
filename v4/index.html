@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>改善提案生成器 V4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/layout.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- ===== 左側：三頁籤 ===== -->
+  <aside>
+    <div class="brand">
+      <div class="brand-badge">K4</div>
+      <div>
+        <div class="brand-kicker">KAIZEN V4 · MULTI-TEMPLATE</div>
+        <div class="brand-title serif">改善提案生成器</div>
+      </div>
+    </div>
+    <div class="brand-sub">多模板、AI 生成、照片編輯。所有資料僅存於你的瀏覽器。</div>
+
+    <nav class="tabs" aria-label="功能頁籤">
+      <button type="button" class="tab-btn active" data-tab="narrative" title="敘述">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+        敘述
+      </button>
+      <button type="button" class="tab-btn" data-tab="settings" title="通用設定">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 0 0-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 0 0-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 0 0-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 0 0-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 0 0 1.066-2.573c-.94-1.543.826-3.31 2.37-2.37c1 .608 2.296.07 2.572-1.065"/><path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0-6 0"/></svg>
+        通用設定
+      </button>
+      <button type="button" class="tab-btn" data-tab="templates" title="模板選擇">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        模板
+      </button>
+    </nav>
+
+    <!-- 敘述頁籤 -->
+    <section class="tab-panel active" id="tab-narrative">
+      <div class="panel">
+        <div class="panel-head"><span class="bar"></span>AI 一鍵生成</div>
+        <div class="hint" style="margin:0">輸入可填在右側或左側正式措辭欄位，一鍵同步產生表格內容與正式措辭。</div>
+        <button class="btn btn-accent" id="generateBtn">點我 · 自動填寫＋正式措辭</button>
+        <button class="btn btn-outline" id="visionBtn" style="width:100%;margin-top:8px">AI 分析照片（改善前）</button>
+        <button class="btn btn-outline" id="slideBtn" style="width:100%;margin-top:8px">生成一頁簡報</button>
+        <div class="status" id="status"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><span class="bar"></span>正式措辭描述（可輸入／複製）</div>
+        <div class="conv-box before">
+          <div class="conv-label">改善前（問題描述）</div>
+          <textarea class="conv-text" id="conv-before" rows="3" placeholder="描述改善前的問題…"></textarea>
+          <div class="conv-btns">
+            <button type="button" class="btn btn-outline btn-sm copy-btn" data-copy="conv-before">複製</button>
+            <button type="button" class="btn btn-outline btn-sm clear-btn" data-clear="before">清除</button>
+          </div>
+        </div>
+        <div class="conv-box after">
+          <div class="conv-label">改善後（對策描述）</div>
+          <textarea class="conv-text" id="conv-after" rows="3" placeholder="描述改善的對策…"></textarea>
+          <div class="conv-btns">
+            <button type="button" class="btn btn-outline btn-sm copy-btn" data-copy="conv-after">複製</button>
+            <button type="button" class="btn btn-outline btn-sm clear-btn" data-clear="after">清除</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 通用設定頁籤 -->
+    <section class="tab-panel" id="tab-settings">
+      <div class="panel">
+        <div class="panel-head"><span class="bar"></span>API 設定</div>
+        <div class="field">
+          <label for="providerSelect">AI 供應商</label>
+          <select id="providerSelect">
+            <option value="gemini">Google Gemini</option>
+            <option value="openai">OpenAI</option>
+            <option value="openrouter">OpenRouter</option>
+            <option value="groq">Groq</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="apiKey">API Key</label>
+          <div class="key-wrap">
+            <input type="password" id="apiKey" autocomplete="off" spellcheck="false" placeholder="貼上你的 API Key…">
+            <button type="button" class="toggle" id="toggleKey">顯示</button>
+          </div>
+          <div class="hint" id="keyHint"></div>
+        </div>
+        <div class="field">
+          <label for="model">模型</label>
+          <div class="key-wrap">
+            <select id="model"></select>
+          </div>
+          <div class="hint" id="modelHint"></div>
+        </div>
+        <button type="button" class="btn btn-outline btn-sm" id="refreshModelsBtn" style="width:100%">重新載入模型清單 ⟳</button>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><span class="bar"></span>圖片壓縮</div>
+        <label class="check-row" style="margin-top:0">
+          <input type="checkbox" id="compressToggle">
+          <span>上傳時壓縮圖片（存成 JPEG，品質 0.85）</span>
+        </label>
+        <div class="field">
+          <label for="compressSlider">最大邊長：<span id="compressVal">1600</span> px</label>
+          <input type="range" id="compressSlider" min="400" max="4000" step="100" value="1600">
+        </div>
+      </div>
+    </section>
+
+    <!-- 模板選擇頁籤（P2） -->
+    <section class="tab-panel" id="tab-templates">
+      <div class="panel">
+        <div class="panel-head"><span class="bar"></span>模板選擇</div>
+        <div class="hint" style="margin:0 0 12px">選擇文件模板，切換後右側會以相同內容重新排版。</div>
+        <div class="template-grid" id="templateGrid">
+          <div class="tpl-card selected">
+            <div class="tpl-name">通用改善提案</div>
+            <div class="tpl-desc">紅／綠改善前後並排，預期效益三欄。</div>
+            <span class="tpl-tag">現用</span>
+          </div>
+          <div class="tpl-card">
+            <div class="tpl-name">施工安全</div>
+            <div class="tpl-desc">施工安全專用欄位與配色（P2）。</div>
+          </div>
+          <div class="tpl-card">
+            <div class="tpl-name">品質管理</div>
+            <div class="tpl-desc">品質管理專用版面（P2）。</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </aside>
+
+  <!-- ===== 右側：文件區 ===== -->
+  <main>
+    <div class="toolbar">
+      <button class="btn btn-outline btn-sm" id="printBtn">列印 / 匯出 PDF</button>
+      <button class="btn btn-outline btn-sm" id="resetBtn">一鍵清除全部</button>
+    </div>
+
+    <div class="doc" id="doc">
+      <div class="doc-header">
+        <div class="logo"><img id="logoImg" alt="公司LOGO"></div>
+        <div class="doc-title serif" id="docTitle" contenteditable="true">改善提案表</div>
+        <div class="logo-side" aria-hidden="true"></div>
+      </div>
+      <div class="title-field">
+        <div class="title-row">
+          <span class="title-label">改善主題：</span>
+          <input type="text" id="f-title" class="title-input" placeholder="輸入改善主題（例如：調質 server 電腦不斷電系統改善）">
+          <span class="attach-mark">（附件）</span>
+        </div>
+      </div>
+
+      <div class="kaizen-pair">
+        <div class="kaizen-box before">
+          <div class="box-cap"><span class="box-no">1</span>改善前（現況說明）</div>
+          <div class="photo-zone" id="photo-zone-before">
+            <div class="photo-grid" id="photo-grid-before"></div>
+            <div class="photo-empty" id="photo-empty-before">尚未上傳改善前照片</div>
+            <button type="button" class="photo-add" id="photo-add-before">＋ 上傳照片（可多張）</button>
+            <input type="file" id="photo-input-before" accept="image/*" multiple hidden>
+          </div>
+          <div class="analysis">
+            <div class="analysis-preview" id="analysis-preview-before" role="textbox" tabindex="0"></div>
+            <textarea class="editable analysis-edit" id="f-before" rows="2" placeholder="描述改善前的問題…"></textarea>
+          </div>
+        </div>
+        <div class="kaizen-box after">
+          <div class="box-cap"><span class="box-no">2</span>改善後（改善對策）</div>
+          <div class="photo-zone" id="photo-zone-after">
+            <div class="photo-grid" id="photo-grid-after"></div>
+            <div class="photo-empty" id="photo-empty-after">尚未上傳改善後照片</div>
+            <button type="button" class="photo-add" id="photo-add-after">＋ 上傳照片（可多張）</button>
+            <input type="file" id="photo-input-after" accept="image/*" multiple hidden>
+          </div>
+          <div class="analysis">
+            <div class="analysis-preview" id="analysis-preview-after" role="textbox" tabindex="0"></div>
+            <textarea class="editable analysis-edit" id="f-after" rows="2" placeholder="描述改善的對策…"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="benefit-box">
+        <div class="box-cap"><span class="box-no">3</span>預期效益</div>
+        <div class="benefit-cols">
+          <div class="benefit-col">
+            <div class="benefit-row">
+              <div class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></div>
+              <textarea class="editable" id="f-benefit-1" rows="1" placeholder="如：減少滑倒事故 50%"></textarea>
+            </div>
+          </div>
+          <div class="benefit-col">
+            <div class="benefit-row">
+              <div class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+              <textarea class="editable" id="f-benefit-2" rows="1" placeholder="如：縮短搬運時間 30%"></textarea>
+            </div>
+          </div>
+          <div class="benefit-col">
+            <div class="benefit-row">
+              <div class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M15 9.5c0-1.4-1.3-2.5-3-2.5s-3 1.1-3 2.5 1.5 2 3 2.5 3 1.1 3 2.5-1.3 2.5-3 2.5-3-1.1-3-2.5"/></svg></div>
+              <textarea class="editable" id="f-benefit-3" rows="1" placeholder="如：降低維修成本 20%"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer>改善提案生成器 V4 · API Key 僅存於本機瀏覽器 · 產生內容請自行確認後使用</footer>
+  </main>
+</div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
