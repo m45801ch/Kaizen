@@ -53,6 +53,29 @@ function init(){
   window.__renderTemplateGrid = renderTemplateGrid;
   window.addEventListener("kaizen:photos-changed",()=>renderDocument());
 
+  /* A4 直橫向 */
+  const orientSel = $("orientSel");
+  let orientStyleEl = null;
+  function applyOrientation(orient, persist){
+    document.body.classList.toggle("orient-landscape", orient === "landscape");
+    if(orient === "landscape"){
+      if(!orientStyleEl){
+        orientStyleEl = document.createElement("style");
+        orientStyleEl.id = "orientStyle";
+        orientStyleEl.textContent = "@page{size:A4 landscape;margin:0}";
+        document.head.appendChild(orientStyleEl);
+      }
+    } else if(orientStyleEl){
+      orientStyleEl.remove();
+      orientStyleEl = null;
+    }
+    if(persist) localStorage.setItem(STORE.orient, orient);
+  }
+  if(orientSel){
+    orientSel.value = localStorage.getItem(STORE.orient) === "landscape" ? "landscape" : "portrait";
+    applyOrientation(orientSel.value, false);
+    orientSel.addEventListener("change", ()=> applyOrientation(orientSel.value, true));
+  }
   $("printBtn").addEventListener("click",()=>{
     document.title=($("f-title")&&$("f-title").value.trim())||"改善提案表";
     window.print();
