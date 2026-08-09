@@ -22,10 +22,12 @@ export function photoZone(side, photos){
     const ratio = (p.w && p.h) ? p.h/p.w : 1;
     const w = p.dispW || 260;
     const h = p.dispH || Math.max(40, Math.round(260*ratio));
-    return '<div class="photo-thumb" style="width:'+w+'px;height:'+h+'px">'+
+    const x = p.dispX || 0, y = p.dispY || 0;
+    return '<div class="photo-thumb" style="left:'+x+'px;top:'+y+'px;width:'+w+'px;height:'+h+'px">'+
       '<img src="'+esc(p.previewDataUrl||p.dataUrl)+'" alt="'+esc(p.name||"照片")+'">'+
       '<button type="button" class="remove" data-remove="'+esc(p.id)+'" title="移除照片">✕</button>'+
       '<button type="button" class="edit-btn" data-edit="'+esc(p.id)+'" title="編輯照片">✎</button>'+
+      '<button type="button" class="center-btn" data-center="'+esc(p.id)+'" title="置中">◎</button>'+
       '<span class="resize-handle" data-resize="'+esc(p.id)+'" title="調整尺寸"></span>'+
     "</div>";
   }).join("");
