@@ -5,7 +5,7 @@ import { state, persistImages } from "../store.js";
 const $ = id => document.getElementById(id);
 let current=null;      // { side, id }
 let editing=null;      // { img:HTMLImageElement, overlay, canvas, ctx, scale, offsetX, offsetY }
-let tool="rect", color="#EF4444", width=4;
+let tool="rect", color="#EF4444", width=4, fontSize=32;
 let undoStack=[];
 
 const TOOLS=[
@@ -31,6 +31,9 @@ export function initEditor(){
       '<span class="sep"></span>'+
       '<div class="color-swatches" id="editorSwatches">'+SWATCHES.map(c=>'<span class="swatch'+(c==="#EF4444"?" active":"")+'" data-color="'+c+'" style="background:'+c+'"></span>').join("")+"</div>"+
       '<span class="sep"></span>'+
+      '<label class="font-size-wrap">字<output id="editorFontSizeVal">32</output>px</label>'+
+      '<input type="range" id="editorFontSize" min="12" max="96" step="1" value="32">'+
+      '<span class="sep"></span>'+
       '<button type="button" class="tool" id="toolUndo" title="復原">↶</button>'+
       '<button type="button" class="tool" id="toolClear" title="清除疊加">清除</button>'+
     "</div>"+
@@ -55,6 +58,11 @@ export function initEditor(){
     color=s.dataset.color;
     modal.querySelectorAll("[data-color]").forEach(x=>x.classList.toggle("active",x===s));
   }));
+  const fsRange=$("editorFontSize"), fsVal=$("editorFontSizeVal");
+  fsRange.addEventListener("input",()=>{
+    fontSize=parseInt(fsRange.value,10);
+    fsVal.textContent=fontSize;
+  });
   $("toolUndo").addEventListener("click",undo);
   $("toolClear").addEventListener("click",()=>{ if(editing){ editing.overlay={rects:[],strokes:[],arrows:[],texts:[],crop:null,rotate:0}; pushUndo(); redraw(); } });
 
@@ -66,7 +74,7 @@ export function initEditor(){
     const p=toImg(e);
     if(tool==="text"){
       const t=prompt("輸入文字：","");
-      if(t){ editing.overlay.texts.push({ x:p.x, y:p.y, text:t, color, size:Math.max(14,width*6), bold:true }); pushUndo(); redraw(); }
+      if(t){ pushUndo(); editing.overlay.texts.push({ x:p.x, y:p.y, text:t, color, size:fontSize, bold:true }); redraw(); }
       return;
     }
     if(tool==="rotate"){ editing.overlay.rotate=((editing.overlay.rotate||0)+90)%360; pushUndo(); redraw(); return; }
