@@ -127,7 +127,7 @@ input[type=range]{width:100%;accent-color:var(--primary);cursor:pointer}
 /* ---------- 圖片編輯器 ---------- */
 .editor-modal{position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:100;display:none;align-items:center;justify-content:center;padding:20px}
 .editor-modal.show{display:flex}
-.editor-card{background:var(--surface);border-radius:14px;width:min(1000px,96vw);max-height:92vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--shadow-md)}
+.editor-card{background:var(--surface);border-radius:14px;width:min(1200px,98vw);height:min(94vh);display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--shadow-md)}
 .editor-toolbar{display:flex;gap:6px;padding:10px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap;align-items:center}
 .editor-toolbar .sep{width:1px;height:24px;background:var(--line);margin:0 4px}
 .tool{
@@ -142,7 +142,7 @@ input[type=range]{width:100%;accent-color:var(--primary);cursor:pointer}
 .swatch:hover{transform:scale(1.15)}
 .swatch.active{box-shadow:0 0 0 2px var(--primary)}
 .editor-canvas-wrap{flex:1;overflow:auto;background:#0F172A;display:flex;align-items:center;justify-content:center;padding:12px;position:relative}
-.editor-canvas{max-width:100%;max-height:100%;background:#fff;box-shadow:var(--shadow-md);cursor:crosshair}
+.editor-canvas{background:#fff;box-shadow:var(--shadow-md);cursor:crosshair;margin:auto}
 .editor-footer{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 14px;border-top:1px solid var(--line)}
 .editor-footer .hint{font-size:11px;color:var(--muted);margin:0}
 
