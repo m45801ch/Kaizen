@@ -22,9 +22,13 @@ export function drawOverlay(ctx, overlay){
     ctx.closePath(); ctx.fillStyle=a.color; ctx.fill();
   });
   (overlay.texts||[]).forEach(t=>{
+    ctx.save();
+    ctx.translate(t.x, t.y);
+    ctx.rotate(((t.angle||0)*Math.PI/180));
     ctx.font=(t.bold?"700 ":"")+t.size+"px sans-serif";
     ctx.fillStyle=t.color; ctx.textBaseline="top";
-    ctx.fillText(t.text, t.x, t.y);
+    ctx.fillText(t.text, 0, 0);
+    ctx.restore();
   });
   if(overlay.crop){
     ctx.strokeStyle="#DC2626"; ctx.lineWidth=2; ctx.setLineDash([6,4]);
