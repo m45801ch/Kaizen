@@ -19,6 +19,10 @@ window.addEventListener("kaizen:status",e=>{
 });
 window.addEventListener("kaizen:status-hide",()=>{ const s=$("status"); if(s){ s.className="status"; s.innerHTML=""; } });
 
+function applyTemplateClass(){
+  document.body.classList.toggle("tpl-safety", state.template==="safety");
+}
+
 function renderTemplateGrid(){
   const grid=$("templateGrid");
   if(!grid) return;
@@ -34,6 +38,7 @@ function renderTemplateGrid(){
       state.template=t.id;
       localStorage.setItem(STORE.template,t.id);
       renderTemplateGrid();
+      applyTemplateClass();
       renderDocument();
     });
     grid.appendChild(card);
@@ -46,12 +51,13 @@ function init(){
   initNarrative();
   initEditor();
   loadForm();
+  applyTemplateClass();
   renderDocument();
   renderTemplateGrid();
   loadImages(()=>renderDocument());
 
   window.__renderTemplateGrid = renderTemplateGrid;
-  window.addEventListener("kaizen:photos-changed",()=>renderDocument());
+  window.addEventListener("kaizen:photos-changed",()=>{ applyTemplateClass(); renderDocument(); });
 
   /* A4 直橫向 */
   const orientSel = $("orientSel");
