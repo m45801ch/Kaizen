@@ -231,15 +231,18 @@ function bindDocument(){
     const zone = thumb.closest(".photo-zone");
     const gridEl = zone ? zone.querySelector(".photo-grid") : null;
     const zoneW = zone ? Math.max(40, zone.clientWidth - 24) : 800;
-    const zoneH = gridEl ? Math.max(40, gridEl.clientHeight - 24) : (zone ? Math.max(40, zone.clientHeight - 24) : 600);
     const startX = e.clientX, startY = e.clientY;
     const baseX = thumb.offsetLeft, baseY = thumb.offsetTop;
-    const maxX = Math.max(0, zoneW - thumb.offsetWidth), maxY = Math.max(0, zoneH - thumb.offsetHeight);
+    const maxX = Math.max(0, zoneW - thumb.offsetWidth);
     function onMove(ev){
       const nx = Math.max(0, Math.min(maxX, baseX + (ev.clientX - startX)));
-      const ny = Math.max(0, Math.min(maxY, baseY + (ev.clientY - startY)));
+      const ny = Math.max(0, baseY + (ev.clientY - startY));
       thumb.style.left = nx+"px";
       thumb.style.top = ny+"px";
+      if(gridEl){
+        const need = Math.round(ny + thumb.offsetHeight);
+        if(need > gridEl.offsetHeight) gridEl.style.height = need+"px";
+      }
     }
     function onUp(){
       thumb.removeEventListener("pointermove", onMove);
