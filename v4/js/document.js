@@ -13,16 +13,16 @@ export function autoResize(el){
 
 export function syncFromDom(){
   const tpl = getTemplate(state.template);
-  data.title = $("#f-title")?$("#f-title").value:"";
-  data.before = $("#f-before")?$("#f-before").value:"";
-  data.after = $("#f-after")?$("#f-after").value:"";
-  data.benefits[0] = $("#f-benefit-1")?$("#f-benefit-1").value:"";
-  data.benefits[1] = $("#f-benefit-2")?$("#f-benefit-2").value:"";
-  data.benefits[2] = $("#f-benefit-3")?$("#f-benefit-3").value:"";
+  data.title = $("f-title")?$("f-title").value:"";
+  data.before = $("f-before")?$("f-before").value:"";
+  data.after = $("f-after")?$("f-after").value:"";
+  data.benefits[0] = $("f-benefit-1")?$("f-benefit-1").value:"";
+  data.benefits[1] = $("f-benefit-2")?$("f-benefit-2").value:"";
+  data.benefits[2] = $("f-benefit-3")?$("f-benefit-3").value:"";
   /* 模板專用欄位 */
   data.extra = data.extra || {};
-  if(tpl.id==="safety") data.extra.safetyLevel = $("#f-safety-level")?$("#f-safety-level").value:"";
-  if(tpl.id==="quality"){ data.extra.qualityUnit = $("#f-quality-unit")?$("#f-quality-unit").value:""; data.extra.qualityStd = $("#f-quality-std")?$("#f-quality-std").value:""; }
+  if(tpl.id==="safety") data.extra.safetyLevel = $("f-safety-level")?$("f-safety-level").value:"";
+  if(tpl.id==="quality"){ data.extra.qualityUnit = $("f-quality-unit")?$("f-quality-unit").value:""; data.extra.qualityStd = $("f-quality-std")?$("f-quality-std").value:""; }
   saveForm();
 }
 

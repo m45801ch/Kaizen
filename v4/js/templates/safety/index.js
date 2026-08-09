@@ -7,9 +7,10 @@ export default {
   desc:"工安專用：警示黃×黑主題、改善前後並排、含危險等級色塊。",
   render(d, h){
     const level = d.extra && d.extra.safetyLevel ? d.extra.safetyLevel : "";
+    const levelAttr = (level==="高"||level==="中"||level==="低") ? ' data-level="'+level+'"' : "";
     const levelRow = '<div class="ga-level-row">'+
       '<span class="ga-level-label">危險等級</span>'+
-      '<span class="ga-level-chip" data-level="'+(level==="高"||level==="中"||level==="低"?level:"")+'">'+esc(level||"—")+"</span>"+
+      '<span class="ga-level-chip"'+levelAttr+'>'+esc(level||"—")+"</span>"+
       '<input type="text" id="f-safety-level" class="ga-level-input" value="'+esc(level)+'" placeholder="高 / 中 / 低">'+
     "</div>";
     return docHeader(d)+'<div class="ga-stripe"></div>'+titleField(d)+levelRow+
