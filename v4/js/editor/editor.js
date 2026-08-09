@@ -31,7 +31,7 @@ export function initEditor(){
       '<span class="sep"></span>'+
       '<div class="color-swatches" id="editorSwatches">'+SWATCHES.map(c=>'<span class="swatch'+(c==="#EF4444"?" active":"")+'" data-color="'+c+'" style="background:'+c+'"></span>').join("")+"</div>"+
       '<span class="sep"></span>'+
-      '<label class="font-size-wrap">字<output id="editorFontSizeVal">32</output>px</label>'+
+      '<label class="font-size-wrap">字<output id="editorFontSizeVal" for="editorFontSize">32</output>px</label>'+
       '<input type="range" id="editorFontSize" min="12" max="96" step="1" value="32">'+
       '<span class="sep"></span>'+
       '<button type="button" class="tool" id="toolUndo" title="復原">↶</button>'+
@@ -64,7 +64,7 @@ export function initEditor(){
     fsVal.textContent=fontSize;
   });
   $("toolUndo").addEventListener("click",undo);
-  $("toolClear").addEventListener("click",()=>{ if(editing){ pushUndo(); editing.overlay={rects:[],strokes:[],arrows:[],texts:[],crop:null,rotate:0}; redraw(); } });
+  $("toolClear").addEventListener("click",()=>{ if(editing){ const ov=editing.overlay; if(ov&&(ov.rects.length||ov.strokes.length||ov.arrows.length||ov.texts.length||ov.crop||ov.rotate)) pushUndo(); editing.overlay={rects:[],strokes:[],arrows:[],texts:[],crop:null,rotate:0}; redraw(); } });
 
   /* 畫布互動 */
   const canvas=$("editorCanvas"), ctx=canvas.getContext("2d");
@@ -139,12 +139,13 @@ function redraw(preview, d){
   const iw=crop?crop.w:editing.img.width, ih=crop?crop.h:editing.img.height;
   const s=editing.scale;
   const cw=rot90?ih*s:iw*s, ch=rot90?iw*s:ih*s;
+  const dw=Math.round(iw*s), dh=Math.round(ih*s);
   if(c.width!==Math.round(cw)||c.height!==Math.round(ch)){ c.width=Math.round(cw); c.height=Math.round(ch); }
   ctx.clearRect(0,0,c.width,c.height);
   ctx.save();
   ctx.translate(c.width/2,c.height/2);
   ctx.rotate(rot*Math.PI/180);
-  ctx.drawImage(editing.img, crop?crop.x:0, crop?crop.y:0, iw, ih, -iw*s/2, -ih*s/2, iw*s, ih*s);
+  ctx.drawImage(editing.img, crop?crop.x:0, crop?crop.y:0, iw, ih, -dw/2, -dh/2, dw, dh);
   ctx.scale(s,s);
   ctx.translate(-iw/2,-ih/2);
   drawOverlay(ctx, editing.overlay);
@@ -201,13 +202,13 @@ function undo(){
   redraw();
 }
 function applyCrop(r){
-  if(!r||r.w<10||r.h<10) return;
+  if(!r||r.w<10||r.h<10){ undoStack.pop(); return; }
   const base=editing.overlay.crop;
   const bx=base?base.x:0, by=base?base.y:0;
   const x=Math.max(0,Math.round(r.x)), y=Math.max(0,Math.round(r.y));
   const w=Math.min((base?base.w:editing.img.width)-x, Math.round(r.w));
   const h=Math.min((base?base.h:editing.img.height)-y, Math.round(r.h));
-  if(w<10||h<10) return;
+  if(w<10||h<10){ undoStack.pop(); return; }
   const shifted=cropOverlay(editing.overlay, {x,y,w,h});
   shifted.crop={ x:bx+x, y:by+y, w, h };
   editing.overlay=shifted;
