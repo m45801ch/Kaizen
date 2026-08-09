@@ -232,7 +232,7 @@ body.orient-landscape .benefit-col:last-child{border-bottom:none}
   .kaizen-box .photo-zone{border:none;padding:6px 10px 8px;margin:0;background:#fff}
   .kaizen-box .analysis{margin-top:6px}
   .photo-add,.photo-empty,.photo-thumb .remove,.photo-thumb .edit-btn,.photo-thumb .resize-handle,.photo-thumb .center-btn{display:none!important}
-  .photo-grid{position:relative;min-height:0;overflow:visible;transform:scale(var(--ps,1));transform-origin:top left;height:calc(var(--ph,64px)*var(--ps,1))}
+  .photo-grid{position:relative;min-height:0;overflow:visible;transform:scale(var(--ps,1));transform-origin:top left;height:calc(var(--ph,64px)*var(--ps,1))!important}
   .photo-thumb{position:absolute;border:1px solid var(--line);border-radius:6px;overflow:hidden;box-shadow:none}
   .photo-thumb img{object-fit:fill}
   body.orient-landscape .doc:not(:has(.slide-page)){display:grid;grid-template-columns:1fr 300px;gap:16px;padding:12mm 14mm}
