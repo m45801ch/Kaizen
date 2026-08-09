@@ -49,6 +49,11 @@ aside{
 /* ---------- 右側主體 ---------- */
 main{flex:1;padding:24px 28px;min-width:0}
 .toolbar{display:flex;justify-content:flex-end;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+.orient-sel{
+  height:32px;font-size:12px;padding:0 10px;border-radius:8px;
+  border:1px solid var(--line-dark);background:var(--surface);color:var(--text);
+  cursor:pointer;font-family:inherit;
+}
 .doc{
   background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
   box-shadow:var(--shadow-sm);padding:32px 36px;max-width:900px;margin:0 auto;
@@ -179,6 +184,18 @@ main{flex:1;padding:24px 28px;min-width:0}
 
 footer{text-align:center;color:var(--muted);font-size:11px;padding:20px 0 8px;max-width:900px;margin:0 auto}
 
+/* ---------- A4 橫向 ---------- */
+body.orient-landscape .doc{max-width:1180px}
+body.orient-landscape .doc-title{font-size:34px}
+body.orient-landscape .kaizen-pair{gap:20px}
+body.orient-landscape .doc{display:grid;grid-template-columns:1fr 320px;gap:18px}
+body.orient-landscape .doc-header{grid-column:1/-1}
+body.orient-landscape .kaizen-pair{grid-column:1;grid-row:2;margin-top:6px}
+body.orient-landscape .benefit-box{grid-column:2;grid-row:2;margin-top:6px;align-self:stretch}
+body.orient-landscape .benefit-cols{grid-template-columns:1fr}
+body.orient-landscape .benefit-col{border-right:none;border-bottom:1px solid var(--line)}
+body.orient-landscape .benefit-col:last-child{border-bottom:none}
+
 /* ---------- 響應式 ---------- */
 @media screen and (max-width:980px){
   .app{flex-direction:column}
@@ -189,6 +206,7 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:20px 0 8px;ma
   .benefit-cols{grid-template-columns:1fr}
   .benefit-col{border-right:none;border-bottom:1px solid var(--line)}
   .benefit-col:last-child{border-bottom:none}
+  body.orient-landscape .doc{display:block;max-width:900px}
 }
 @media screen and (max-width:560px){
   .template-grid{grid-template-columns:1fr}
@@ -209,6 +227,13 @@ footer{text-align:center;color:var(--muted);font-size:11px;padding:20px 0 8px;ma
   .photo-grid{display:flex;flex-wrap:wrap;gap:7px}
   .photo-thumb{border:1px solid var(--line);border-radius:6px;overflow:hidden;box-shadow:none}
   .photo-thumb img{object-fit:contain}
+  body.orient-landscape .doc{display:grid;grid-template-columns:1fr 300px;gap:16px;padding:12mm 14mm}
+  body.orient-landscape .doc-header{grid-column:1/-1}
+  body.orient-landscape .kaizen-pair{grid-column:1;grid-row:2;margin-top:6px}
+  body.orient-landscape .benefit-box{grid-column:2;grid-row:2;margin-top:6px;align-self:stretch}
+  body.orient-landscape .benefit-cols{grid-template-columns:1fr!important}
+  body.orient-landscape .benefit-col{border-right:none!important;border-bottom:1px solid var(--line)!important}
+  body.orient-landscape .benefit-col:last-child{border-right:none!important;border-bottom:none!important}
   .photo-thumb,.al-line,.benefit-col{page-break-inside:avoid}
   .kaizen-box .box-cap,.benefit-box .box-cap{page-break-after:avoid}
   .doc-header,.title-field{page-break-after:avoid}
