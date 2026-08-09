@@ -12,13 +12,16 @@ export function drawOverlay(ctx, overlay){
     ctx.stroke();
   });
   (overlay.arrows||[]).forEach(a=>{
-    ctx.strokeStyle=a.color; ctx.lineWidth=a.width; ctx.lineCap="round";
-    ctx.beginPath(); ctx.moveTo(a.x1,a.y1); ctx.lineTo(a.x2,a.y2); ctx.stroke();
-    const ang=Math.atan2(a.y2-a.y1,a.x2-a.x1), h=Math.max(10,a.width*3), s=Math.max(5,a.width*1.6);
+    const ang=Math.atan2(a.y2-a.y1,a.x2-a.x1);
+    const h=Math.max(12,a.width*3);          // 箭頭長度
+    const w=Math.max(6,a.width*1.8);         // 箭頭半寬
+    const bx=a.x2-h*Math.cos(ang), by=a.y2-h*Math.sin(ang);   // 頭部基部
+    ctx.strokeStyle=a.color; ctx.lineWidth=a.width; ctx.lineCap="butt"; ctx.lineJoin="round";
+    ctx.beginPath(); ctx.moveTo(a.x1,a.y1); ctx.lineTo(a.x2-h*0.7*Math.cos(ang), a.y2-h*0.7*Math.sin(ang)); ctx.stroke();
     ctx.beginPath();
-    ctx.moveTo(a.x2,a.y2);
-    ctx.lineTo(a.x2-h*Math.cos(ang-Math.PI/6), a.y2-h*Math.sin(ang-Math.PI/6));
-    ctx.lineTo(a.x2-h*Math.cos(ang+Math.PI/6), a.y2-h*Math.sin(ang+Math.PI/6));
+    ctx.moveTo(a.x2,a.y2);                                        // 尖端
+    ctx.lineTo(bx + w*Math.sin(ang), by - w*Math.cos(ang));       // 左下
+    ctx.lineTo(bx - w*Math.sin(ang), by + w*Math.cos(ang));       // 右下
     ctx.closePath(); ctx.fillStyle=a.color; ctx.fill();
   });
   (overlay.texts||[]).forEach(t=>{
