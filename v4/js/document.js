@@ -182,7 +182,7 @@ function bindDocument(){
     const thumb = handle.closest(".photo-thumb");
     if(!thumb) return;
     const zone = thumb.closest(".photo-zone");
-    const maxW = zone ? Math.max(40, zone.clientWidth - 10) : 800;
+    const maxW = zone ? Math.max(40, zone.clientWidth - 24) : 800;
     const startX = e.clientX, startY = e.clientY;
     const startW = thumb.offsetWidth, startH = thumb.offsetHeight;
     function onMove(ev){
@@ -192,8 +192,8 @@ function bindDocument(){
       thumb.style.height = h+"px";
     }
     function onUp(){
-      window.removeEventListener("pointermove", onMove);
-      window.removeEventListener("pointerup", onUp);
+      handle.removeEventListener("pointermove", onMove);
+      handle.removeEventListener("pointerup", onUp);
       const w = thumb.offsetWidth, h = thumb.offsetHeight;
       ["before","after"].forEach(side=>{
         const p = state.images[side].find(x=>x.id===id);
@@ -201,7 +201,8 @@ function bindDocument(){
       });
       persistImages();
     }
-    window.addEventListener("pointermove", onMove);
-    window.addEventListener("pointerup", onUp);
+    handle.setPointerCapture(e.pointerId);
+    handle.addEventListener("pointermove", onMove);
+    handle.addEventListener("pointerup", onUp);
   });
 }
