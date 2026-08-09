@@ -50,6 +50,7 @@ export function initEditor(){
 
   /* 工具列 */
   modal.querySelectorAll("[data-tool]").forEach(b=>b.addEventListener("click",()=>{
+    if(b.dataset.tool==="rotate"){ rotateImage(); return; }
     tool=b.dataset.tool;
     modal.querySelectorAll("[data-tool]").forEach(x=>x.classList.toggle("active",x===b));
     updateHint();
@@ -77,7 +78,6 @@ export function initEditor(){
       if(t){ pushUndo(); editing.overlay.texts.push({ x:p.x, y:p.y, text:t, color, size:fontSize, bold:true }); redraw(); }
       return;
     }
-    if(tool==="rotate"){ pushUndo(); editing.overlay.rotate=((editing.overlay.rotate||0)+90)%360; redraw(); return; }
     pushUndo();
     drawing={ sx:p.x, sy:p.y, cx:p.x, cy:p.y };
     if(tool==="draw"){ editing.overlay.strokes.push({ points:[p], color, width }); }
@@ -113,7 +113,7 @@ export function initEditor(){
 }
 
 function updateHint(){
-  const hints={rect:"拖曳以繪製框線",draw:"按住拖曳以塗鴉",arrow:"拖曳以繪製箭頭",text:"點擊加入文字",crop:"拖曳選取要保留的區域",rotate:"點擊旋轉 90°"};
+  const hints={rect:"拖曳以繪製框線",draw:"按住拖曳以塗鴉",arrow:"拖曳以繪製箭頭",text:"點擊加入文字",crop:"拖曳選取要保留的區域"};
   $("editorHint").textContent=hints[tool]||"";
 }
 
@@ -191,6 +191,12 @@ function openEditor(side,id){
 function closeEditor(){
   $("editorModal").classList.remove("show");
   current=null; editing=null;
+}
+function rotateImage(){
+  if(!editing) return;
+  pushUndo();
+  editing.overlay.rotate=((editing.overlay.rotate||0)+90)%360;
+  redraw();
 }
 function pushUndo(){
   undoStack.push(JSON.stringify(editing.overlay));
