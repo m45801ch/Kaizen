@@ -12,7 +12,7 @@ export default {
       '<span class="ga-level-chip" data-level="'+(level==="高"||level==="中"||level==="低"?level:"")+'">'+esc(level||"—")+"</span>"+
       '<input type="text" id="f-safety-level" class="ga-level-input" value="'+esc(level)+'" placeholder="高 / 中 / 低">'+
     "</div>";
-    return docHeader(d)+titleField(d)+levelRow+
+    return docHeader(d)+'<div class="ga-stripe"></div>'+titleField(d)+levelRow+
       '<div class="kaizen-pair ga">'+
         '<div class="kaizen-box ga before"><div class="box-cap"><span class="box-no">1</span>改善前（現況說明）</div>'+
           photoZone("before", d.photos)+analysisArea("before", d.before, d.after, h.buildLines)+
