@@ -64,7 +64,7 @@ export function initEditor(){
     fsVal.textContent=fontSize;
   });
   $("toolUndo").addEventListener("click",undo);
-  $("toolClear").addEventListener("click",()=>{ if(editing){ editing.overlay={rects:[],strokes:[],arrows:[],texts:[],crop:null,rotate:0}; pushUndo(); redraw(); } });
+  $("toolClear").addEventListener("click",()=>{ if(editing){ pushUndo(); editing.overlay={rects:[],strokes:[],arrows:[],texts:[],crop:null,rotate:0}; redraw(); } });
 
   /* 畫布互動 */
   const canvas=$("editorCanvas"), ctx=canvas.getContext("2d");
@@ -77,7 +77,8 @@ export function initEditor(){
       if(t){ pushUndo(); editing.overlay.texts.push({ x:p.x, y:p.y, text:t, color, size:fontSize, bold:true }); redraw(); }
       return;
     }
-    if(tool==="rotate"){ editing.overlay.rotate=((editing.overlay.rotate||0)+90)%360; pushUndo(); redraw(); return; }
+    if(tool==="rotate"){ pushUndo(); editing.overlay.rotate=((editing.overlay.rotate||0)+90)%360; redraw(); return; }
+    pushUndo();
     drawing={ sx:p.x, sy:p.y, cx:p.x, cy:p.y };
     if(tool==="draw"){ editing.overlay.strokes.push({ points:[p], color, width }); }
     canvas.setPointerCapture(e.pointerId);
@@ -98,7 +99,7 @@ export function initEditor(){
     if(tool==="rect"){ editing.overlay.rects.push({x:rect.x,y:rect.y,w:rect.w,h:rect.h,color,width}); }
     if(tool==="arrow"){ editing.overlay.arrows.push({x1:d.sx,y1:d.sy,x2:d.cx,y2:d.cy,color,width}); }
     if(tool==="crop"){ applyCrop(rect); }
-    drawing=null; pushUndo(); redraw();
+    drawing=null; redraw();
   });
 
   /* 完成/取消 */
