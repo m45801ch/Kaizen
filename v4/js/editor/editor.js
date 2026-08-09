@@ -5,10 +5,13 @@ import { state, persistImages } from "../store.js";
 const $ = id => document.getElementById(id);
 let current=null;      // { side, id }
 let editing=null;      // { img:HTMLImageElement, overlay, canvas, ctx, scale, offsetX, offsetY }
-let tool="rect", color="#EF4444", width=4, fontSize=32;
+let tool="select", color="#EF4444", width=4, fontSize=32;
+let selected=null;   // { type:"text"|"rect"|"arrow"|"stroke", index }
+let selDrag=null;    // { mode, start, handle?, which?, pi? }
 let undoStack=[];
 
 const TOOLS=[
+  ["select","選擇",'<path d="M4 3l7 18l2.5-6.5L20 14z"/>'],
   ["rect","框線",'<rect x="3" y="3" width="18" height="18" rx="2"/>'],
   ["draw","塗鴉",'<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497zM15 5l4 4"/>'],
   ["arrow","箭頭",'<path d="M5 12h14m-7-7l7 7l-7 7"/>'],
@@ -27,7 +30,7 @@ export function initEditor(){
   modal.innerHTML=
   '<div class="editor-card">'+
     '<div class="editor-toolbar" id="editorToolbar">'+
-      TOOLS.map(([id,name,ic])=>'<button type="button" class="tool'+(id==="rect"?" active":"")+'" data-tool="'+id+'" title="'+name+'">'+svgIcon(ic)+"</button>").join("")+
+      TOOLS.map(([id,name,ic])=>'<button type="button" class="tool'+(id==="select"?" active":"")+'" data-tool="'+id+'" title="'+name+'">'+svgIcon(ic)+"</button>").join("")+
       '<span class="sep"></span>'+
       '<div class="color-swatches" id="editorSwatches">'+SWATCHES.map(c=>'<span class="swatch'+(c==="#EF4444"?" active":"")+'" data-color="'+c+'" style="background:'+c+'"></span>').join("")+"</div>"+
       '<span class="sep"></span>'+
@@ -52,6 +55,7 @@ export function initEditor(){
   modal.querySelectorAll("[data-tool]").forEach(b=>b.addEventListener("click",()=>{
     if(b.dataset.tool==="rotate"){ rotateImage(); return; }
     tool=b.dataset.tool;
+    selected=null; selDrag=null;
     modal.querySelectorAll("[data-tool]").forEach(x=>x.classList.toggle("active",x===b));
     updateHint();
   }));
@@ -73,6 +77,7 @@ export function initEditor(){
   canvas.addEventListener("pointerdown",e=>{
     if(!editing) return;
     const p=toImg(e);
+    if(tool==="select"){ startSelect(p); return; }
     if(tool==="text"){
       const t=prompt("輸入文字：","");
       if(t){ pushUndo(); editing.overlay.texts.push({ x:p.x, y:p.y, text:t, color, size:fontSize, bold:true }); redraw(); }
@@ -84,6 +89,7 @@ export function initEditor(){
     canvas.setPointerCapture(e.pointerId);
   });
   canvas.addEventListener("pointermove",e=>{
+    if(tool==="select"){ selectMove(e); return; }
     if(!drawing) return;
     const p=toImg(e);
     drawing.cx=p.x; drawing.cy=p.y;
@@ -93,6 +99,7 @@ export function initEditor(){
     } else redraw(true, drawing);
   });
   canvas.addEventListener("pointerup",()=>{
+    if(tool==="select"){ selectEnd(); return; }
     if(!drawing) return;
     const d=drawing;
     const rect={ x:Math.min(d.sx,d.cx), y:Math.min(d.sy,d.cy), w:Math.abs(d.cx-d.sx), h:Math.abs(d.cy-d.sy) };
@@ -113,7 +120,7 @@ export function initEditor(){
 }
 
 function updateHint(){
-  const hints={rect:"拖曳以繪製框線",draw:"按住拖曳以塗鴉",arrow:"拖曳以繪製箭頭",text:"點擊加入文字",crop:"拖曳選取要保留的區域"};
+  const hints={select:"點選物件後拖曳調整",rect:"拖曳以繪製框線",draw:"按住拖曳以塗鴉",arrow:"拖曳以繪製箭頭",text:"點擊加入文字",crop:"拖曳選取要保留的區域"};
   $("editorHint").textContent=hints[tool]||"";
 }
 
@@ -130,6 +137,43 @@ function toImg(e){
   return { x:x/editing.scale + iw/2, y:y/editing.scale + ih/2 };
 }
 function fromImg(px,py){ return { x:editing.offsetX+px*editing.scale, y:editing.offsetY+py*editing.scale }; }
+
+function distToSeg(p,a,b){
+  const dx=b.x-a.x, dy=b.y-a.y, L2=dx*dx+dy*dy;
+  let t=0;
+  if(L2>0) t=Math.max(0,Math.min(1,((p.x-a.x)*dx+(p.y-a.y)*dy)/L2));
+  return Math.hypot(p.x-(a.x+t*dx), p.y-(a.y+t*dy));
+}
+function textRect(t){
+  const c=$("editorCanvas"), ctx=c.getContext("2d");
+  ctx.font=(t.bold?"700 ":"")+t.size+"px sans-serif";
+  return { x:t.x, y:t.y, w:ctx.measureText(t.text).width, h:t.size };
+}
+function hitTest(p){
+  const ov=editing.overlay, T=8/editing.scale;
+  for(let i=ov.texts.length-1;i>=0;i--){
+    const r=textRect(ov.texts[i]);
+    if(p.x>=r.x-T&&p.x<=r.x+r.w+T&&p.y>=r.y-T&&p.y<=r.y+r.h+T) return {type:"text",index:i};
+  }
+  for(let i=ov.rects.length-1;i>=0;i--){
+    const r=ov.rects[i];
+    if(p.x>=r.x-T&&p.x<=r.x+r.w+T&&p.y>=r.y-T&&p.y<=r.y+r.h+T) return {type:"rect",index:i};
+  }
+  for(let i=ov.strokes.length-1;i>=0;i--){
+    const pts=ov.strokes[i].points;
+    for(let j=0;j<pts.length-1;j++) if(distToSeg(p,pts[j],pts[j+1])<T) return {type:"stroke",index:i};
+  }
+  for(let i=ov.arrows.length-1;i>=0;i--){
+    const a=ov.arrows[i];
+    if(distToSeg(p,{x:a.x1,y:a.y1},{x:a.x2,y:a.y2})<T) return {type:"arrow",index:i};
+  }
+  return null;
+}
+function selObj(){
+  if(!selected) return null;
+  const arr=editing.overlay[selected.type==="stroke"?"strokes":selected.type+"s"];
+  return arr?arr[selected.index]:null;
+}
 
 function redraw(preview, d){
   const c=$("editorCanvas"), ctx=c.getContext("2d");
@@ -149,6 +193,7 @@ function redraw(preview, d){
   ctx.scale(s,s);
   ctx.translate(-iw/2,-ih/2);
   drawOverlay(ctx, editing.overlay);
+  drawSelection(ctx);
   if(preview&&d){
     ctx.strokeStyle=color; ctx.lineWidth=width;
     if(tool==="rect"||tool==="crop"){
@@ -160,6 +205,31 @@ function redraw(preview, d){
     if(tool==="arrow"){ ctx.beginPath(); ctx.moveTo(d.sx,d.sy); ctx.lineTo(d.cx,d.cy); ctx.stroke(); }
   }
   ctx.restore();
+}
+
+function drawSelection(ctx){
+  const o=selObj();
+  if(!o||tool!=="select") return;
+  ctx.strokeStyle="#2563EB";
+  ctx.lineWidth=1.5/editing.scale;
+  ctx.setLineDash([6/editing.scale,4/editing.scale]);
+  if(selected.type==="text"){
+    const r=textRect(o);
+    ctx.save();
+    ctx.translate(o.x,o.y);
+    ctx.rotate(((o.angle||0)*Math.PI/180));
+    ctx.strokeRect(0,0,r.w,r.h);
+    ctx.restore();
+  } else if(selected.type==="rect"){
+    ctx.strokeRect(o.x,o.y,o.w,o.h);
+  } else if(selected.type==="arrow"){
+    ctx.beginPath(); ctx.moveTo(o.x1,o.y1); ctx.lineTo(o.x2,o.y2); ctx.stroke();
+  } else if(selected.type==="stroke"){
+    const xs=o.points.map(p=>p.x), ys=o.points.map(p=>p.y);
+    const x0=Math.min(...xs), y0=Math.min(...ys), x1=Math.max(...xs), y1=Math.max(...ys);
+    ctx.strokeRect(x0,y0,x1-x0,y1-y0);
+  }
+  ctx.setLineDash([]);
 }
 
 function openEditor(side,id){
@@ -190,7 +260,7 @@ function openEditor(side,id){
 }
 function closeEditor(){
   $("editorModal").classList.remove("show");
-  current=null; editing=null;
+  current=null; editing=null; selected=null; selDrag=null;
 }
 function rotateImage(){
   if(!editing) return;
@@ -218,6 +288,35 @@ function applyCrop(r){
   const shifted=cropOverlay(editing.overlay, {x,y,w,h});
   shifted.crop={ x:bx+x, y:by+y, w, h };
   editing.overlay=shifted;
+  redraw();
+}
+function applyMove(dx,dy){
+  const o=selObj(); if(!o) return;
+  if(selected.type==="text"){ o.x+=dx; o.y+=dy; }
+  else if(selected.type==="rect"){ o.x+=dx; o.y+=dy; }
+  else if(selected.type==="arrow"){ o.x1+=dx; o.y1+=dy; o.x2+=dx; o.y2+=dy; }
+  else if(selected.type==="stroke"){ o.points.forEach(pt=>{ pt.x+=dx; pt.y+=dy; }); }
+}
+function startSelect(p){
+  const ov=editing.overlay;
+  const hit=hitTest(p);
+  if(!hit){ selected=null; selDrag=null; redraw(); return; }
+  selected=hit;
+  pushUndo();
+  selDrag={ mode:"move", start:{x:p.x,y:p.y} };
+  redraw();
+}
+function selectMove(e){
+  if(!selDrag) return;
+  const p=toImg(e);
+  if(selDrag.mode==="move"){
+    applyMove(p.x-selDrag.start.x, p.y-selDrag.start.y);
+    selDrag.start={x:p.x,y:p.y};
+  }
+  redraw();
+}
+function selectEnd(){
+  selDrag=null;
   redraw();
 }
 function renderComposite(){
