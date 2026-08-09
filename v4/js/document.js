@@ -143,7 +143,7 @@ function layoutPhotos(side){
     let s = printW / zoneW;
     s = Math.min(1, Math.max(0.3, s));
     grid.style.setProperty("--ps", String(s));
-    grid.style.setProperty("--ph", String(maxBottom));
+    grid.style.setProperty("--ph", String(maxBottom)+"px");
   }
 }
 
