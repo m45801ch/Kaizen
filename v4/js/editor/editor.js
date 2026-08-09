@@ -9,12 +9,12 @@ let tool="rect", color="#EF4444", width=4, fontSize=32;
 let undoStack=[];
 
 const TOOLS=[
-  ["rect","框線",'<rect x="3" y="5" width="18" height="14" rx="2"/>'],
-  ["draw","塗鴉",'<path d="M4 17l6-10 6 10"/>'],
-  ["arrow","箭頭",'<path d="M5 19l14-12M19 7v8M19 7h-8"/>'],
-  ["text","文字",'<path d="M4 7h16M4 12h10M4 17h16M15 12l3 7M12 19l3-7"/>'],
-  ["crop","裁剪",'<path d="M4 20V9a2 2 0 0 1 2-2h14M20 4v11a2 2 0 0 1-2 2H4"/>'],
-  ["rotate","旋轉",'<path d="M4 10a8 8 0 0 1 16 0M4 10V4m0 6h6"/>']
+  ["rect","框線",'<rect x="3" y="3" width="18" height="18" rx="2"/>'],
+  ["draw","塗鴉",'<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497zM15 5l4 4"/>'],
+  ["arrow","箭頭",'<path d="M5 12h14m-7-7l7 7l-7 7"/>'],
+  ["text","文字",'<path d="M12 4v16M4 7V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2M9 20h6"/>'],
+  ["crop","裁剪",'<g><path d="M6 2v14a2 2 0 0 0 2 2h14"/><path d="M18 22V8a2 2 0 0 0-2-2H2"/></g>'],
+  ["rotate","旋轉",'<g><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></g>']
 ];
 const SWATCHES=["#EF4444","#F97316","#EAB308","#22C55E","#3B82F6","#8B5CF6","#111827","#FFFFFF"];
 
