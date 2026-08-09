@@ -1,5 +1,5 @@
 /* 右側文件：依目前模板渲染 + 事件綁定 + 照片上傳/壓縮 */
-import { state, data, saveForm, persistImages } from "./store.js";
+import { state, data, saveForm, persistImages, DEFAULT_LOGO } from "./store.js";
 import { getTemplate } from "./templates/index.js";
 import { buildLines } from "./analysis.js";
 
@@ -105,7 +105,7 @@ export function renderDocument(){
   /* 綁定 */
   bindDocument();
   /* LOGO */
-  const logo = localStorage.getItem("kai.gen.logo.v1");
+  const logo = localStorage.getItem("kai.gen.logo.v1") || DEFAULT_LOGO;
   if(logo) $("logoImg").src = logo;
 }
 
