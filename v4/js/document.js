@@ -116,7 +116,6 @@ function layoutPhotos(side){
   if(!grid) return;
   const zone = $("photo-zone-"+side);
   const zoneW = zone ? zone.clientWidth - 24 : grid.clientWidth;   // 扣除 padding 12*2
-  const zoneH = zone ? Math.max(64, zone.clientHeight - 24) : 64;
   const gap = 9;
   let x = 0, y = 0, rowH = 0, maxBottom = 64;
   state.images[side].forEach(p=>{
@@ -207,8 +206,9 @@ function bindDocument(){
         const p=state.images[side].find(x=>x.id===id);
         if(p){
           const zone=$("photo-zone-"+side);
+          const gridEl=zone?zone.querySelector(".photo-grid"):null;
           const zoneW=zone?Math.max(40,zone.clientWidth-24):800;
-          const zoneH=zone?Math.max(40,zone.clientHeight-24):600;
+          const zoneH=gridEl?Math.max(40,gridEl.clientHeight-24):(zone?Math.max(40,zone.clientHeight-24):600);
           const w=p.dispW||260, h=p.dispH||Math.max(40,Math.round(260*((p.w&&p.h)?p.h/p.w:1)));
           p.dispX=Math.max(0,Math.round((zoneW-w)/2));
           p.dispY=Math.max(0,Math.round((zoneH-h)/2));
@@ -227,9 +227,11 @@ function bindDocument(){
     if(e.target.closest(".resize-handle,.remove,.edit-btn,.center-btn")) return;
     const id = thumb.querySelector("[data-resize]") ? thumb.querySelector("[data-resize]").dataset.resize : null;
     if(!id) return;
+    e.preventDefault();
     const zone = thumb.closest(".photo-zone");
+    const gridEl = zone ? zone.querySelector(".photo-grid") : null;
     const zoneW = zone ? Math.max(40, zone.clientWidth - 24) : 800;
-    const zoneH = zone ? Math.max(40, zone.clientHeight - 24) : 600;
+    const zoneH = gridEl ? Math.max(40, gridEl.clientHeight - 24) : (zone ? Math.max(40, zone.clientHeight - 24) : 600);
     const startX = e.clientX, startY = e.clientY;
     const baseX = thumb.offsetLeft, baseY = thumb.offsetTop;
     const maxX = Math.max(0, zoneW - thumb.offsetWidth), maxY = Math.max(0, zoneH - thumb.offsetHeight);
@@ -245,13 +247,16 @@ function bindDocument(){
       const lx = thumb.offsetLeft, ly = thumb.offsetTop;
       ["before","after"].forEach(side=>{
         const p = state.images[side].find(x=>x.id===id);
-        if(p){ p.dispX = lx; p.dispY = ly; }
+        if(p){ p.dispX = lx; p.dispY = ly; if($("photo-grid-"+side)) layoutPhotos(side); }
       });
       persistImages();
     }
+    const onCancel = ()=>{ onUp(); };
     thumb.setPointerCapture(e.pointerId);
     thumb.addEventListener("pointermove", onMove);
     thumb.addEventListener("pointerup", onUp);
+    thumb.addEventListener("pointercancel", onCancel);
+    thumb.addEventListener("lostpointercapture", onCancel);
   });
 
   /* 照片縮放把手（Pointer Events） */
@@ -278,7 +283,7 @@ function bindDocument(){
       const w = thumb.offsetWidth, h = thumb.offsetHeight;
       ["before","after"].forEach(side=>{
         const p = state.images[side].find(x=>x.id===id);
-        if(p){ p.dispW = w; p.dispH = h; }
+        if(p){ p.dispW = w; p.dispH = h; if($("photo-grid-"+side)) layoutPhotos(side); }
       });
       persistImages();
     }
