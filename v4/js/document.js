@@ -102,11 +102,40 @@ export function renderDocument(){
   const view = { ...data, photos: state.images };
   const doc = $("doc");
   doc.innerHTML = tpl.render(view, { esc:(s)=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"), buildLines });
+  /* 照片位置計算 */
+  ["before","after"].forEach(side=>{ if($("photo-grid-"+side)) layoutPhotos(side); });
   /* 綁定 */
   bindDocument();
   /* LOGO */
   const el = $("logoImg");
   if(el) el.src = localStorage.getItem("kai.gen.logo.v1") || DEFAULT_LOGO;
+}
+
+function layoutPhotos(side){
+  const grid = $("photo-grid-"+side);
+  if(!grid) return;
+  const zone = $("photo-zone-"+side);
+  const zoneW = zone ? zone.clientWidth - 24 : grid.clientWidth;   // 扣除 padding 12*2
+  const zoneH = zone ? Math.max(64, zone.clientHeight - 24) : 64;
+  const gap = 9;
+  let x = 0, y = 0, rowH = 0, maxBottom = 64;
+  state.images[side].forEach(p=>{
+    const w = p.dispW || 260, h = p.dispH || Math.max(40, Math.round(260*((p.w&&p.h)?p.h/p.w:1)));
+    let px, py;
+    if(p.dispX!==undefined && p.dispY!==undefined){
+      px = p.dispX; py = p.dispY;
+    } else {
+      if(x>0 && x+w>zoneW){ y += rowH+gap; x = 0; rowH = 0; }
+      px = x; py = y;
+      x += w+gap;
+      if(h>rowH) rowH = h;
+    }
+    const thumb = grid.querySelector('.photo-thumb[data-resize="'+p.id+'"]');
+    if(thumb){ thumb.style.left = px+"px"; thumb.style.top = py+"px"; }
+    const bottom = py+h;
+    if(bottom>maxBottom) maxBottom = bottom;
+  });
+  grid.style.height = maxBottom+"px";
 }
 
 function bindDocument(){
@@ -171,6 +200,40 @@ function bindDocument(){
         if(p) window.dispatchEvent(new CustomEvent("kaizen:edit-photo",{detail:{side,id}}));
       });
     }
+  });
+
+  /* 照片移動：拖照片本體 */
+  doc.addEventListener("pointerdown", e=>{
+    const thumb = e.target.closest(".photo-thumb");
+    if(!thumb) return;
+    if(e.target.closest(".resize-handle,.remove,.edit-btn,.center-btn")) return;
+    const id = thumb.querySelector("[data-resize]") ? thumb.querySelector("[data-resize]").dataset.resize : null;
+    if(!id) return;
+    const zone = thumb.closest(".photo-zone");
+    const zoneW = zone ? Math.max(40, zone.clientWidth - 24) : 800;
+    const zoneH = zone ? Math.max(40, zone.clientHeight - 24) : 600;
+    const startX = e.clientX, startY = e.clientY;
+    const baseX = thumb.offsetLeft, baseY = thumb.offsetTop;
+    const maxX = Math.max(0, zoneW - thumb.offsetWidth), maxY = Math.max(0, zoneH - thumb.offsetHeight);
+    function onMove(ev){
+      const nx = Math.max(0, Math.min(maxX, baseX + (ev.clientX - startX)));
+      const ny = Math.max(0, Math.min(maxY, baseY + (ev.clientY - startY)));
+      thumb.style.left = nx+"px";
+      thumb.style.top = ny+"px";
+    }
+    function onUp(){
+      thumb.removeEventListener("pointermove", onMove);
+      thumb.removeEventListener("pointerup", onUp);
+      const lx = thumb.offsetLeft, ly = thumb.offsetTop;
+      ["before","after"].forEach(side=>{
+        const p = state.images[side].find(x=>x.id===id);
+        if(p){ p.dispX = lx; p.dispY = ly; }
+      });
+      persistImages();
+    }
+    thumb.setPointerCapture(e.pointerId);
+    thumb.addEventListener("pointermove", onMove);
+    thumb.addEventListener("pointerup", onUp);
   });
 
   /* 照片縮放把手（Pointer Events） */
