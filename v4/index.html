@@ -113,6 +113,17 @@
           <input type="range" id="compressSlider" min="400" max="4000" step="100" value="1600">
         </div>
       </div>
+
+      <div class="panel">
+        <div class="panel-head"><span class="bar"></span>公司 LOGO</div>
+        <img id="logoPreview" alt="公司LOGO" style="height:40px;width:auto;max-width:180px;object-fit:contain;margin-bottom:10px;display:block">
+        <div style="display:flex;gap:8px">
+          <button type="button" class="btn btn-outline btn-sm" id="logoChangeBtn">更換LOGO</button>
+          <button type="button" class="btn btn-outline btn-sm" id="logoResetBtn">回復</button>
+        </div>
+        <input type="file" id="logoInput" accept="image/*" hidden>
+        <div class="hint" style="margin-top:8px">上傳自己的圖檔取代內建 LOGO，會自動壓縮至寬度 360px 內並記憶。</div>
+      </div>
     </section>
 
     <!-- 模板選擇頁籤（P2） -->
