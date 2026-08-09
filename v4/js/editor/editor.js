@@ -36,6 +36,8 @@ export function initEditor(){
       '<span class="sep"></span>'+
       '<label class="font-size-wrap">字<output id="editorFontSizeVal" for="editorFontSize">32</output>px</label>'+
       '<input type="range" id="editorFontSize" min="12" max="96" step="1" value="32">'+
+      '<label class="font-size-wrap">粗<canvas id="editorWidthPrev" width="40" height="22"></canvas></label>'+
+      '<input type="range" id="editorWidth" min="1" max="30" step="1" value="4">'+
       '<span class="sep"></span>'+
       '<button type="button" class="tool" id="toolUndo" title="復原">↶</button>'+
       '<button type="button" class="tool" id="toolClear" title="清除疊加">清除</button>'+
@@ -68,6 +70,17 @@ export function initEditor(){
     fontSize=parseInt(fsRange.value,10);
     fsVal.textContent=fontSize;
   });
+  const wRange=$("editorWidth"), wPrev=$("editorWidthPrev");
+  function drawWidthPrev(){
+    const c=wPrev.getContext("2d");
+    c.clearRect(0,0,40,22);
+    c.strokeStyle="#1E293B";
+    c.lineCap="round";
+    c.lineWidth=parseInt(wRange.value,10);
+    c.beginPath(); c.moveTo(6,11); c.lineTo(34,11); c.stroke();
+  }
+  wRange.addEventListener("input",()=>{ width=parseInt(wRange.value,10); drawWidthPrev(); });
+  drawWidthPrev();
   $("toolUndo").addEventListener("click",undo);
   $("toolClear").addEventListener("click",()=>{ if(editing){ const ov=editing.overlay; if(ov&&(ov.rects.length||ov.strokes.length||ov.arrows.length||ov.texts.length||ov.crop||ov.rotate)) pushUndo(); editing.overlay={rects:[],strokes:[],arrows:[],texts:[],crop:null,rotate:0}; selected=null; selDrag=null; redraw(); } });
 
