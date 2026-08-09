@@ -102,7 +102,7 @@ main{flex:1;padding:24px 28px;min-width:0}
   position:relative;border-radius:10px;overflow:hidden;border:1px solid var(--line);
   background:var(--surface);flex:0 0 auto;box-shadow:var(--shadow-sm);
 }
-.photo-thumb img{width:100%;height:100%;object-fit:contain;display:block}
+.photo-thumb img{width:100%;height:100%;object-fit:fill;display:block}
 .photo-thumb .resize-handle{
   position:absolute;right:0;bottom:0;width:16px;height:16px;cursor:se-resize;
   opacity:0;transition:opacity .15s;touch-action:none;
@@ -227,7 +227,7 @@ body.orient-landscape .benefit-col:last-child{border-bottom:none}
   .photo-add,.photo-empty,.photo-thumb .remove,.photo-thumb .edit-btn,.photo-thumb .resize-handle{display:none!important}
   .photo-grid{display:flex;flex-wrap:wrap;gap:7px}
   .photo-thumb{border:1px solid var(--line);border-radius:6px;overflow:hidden;box-shadow:none}
-  .photo-thumb img{object-fit:contain}
+  .photo-thumb img{object-fit:fill}
   body.orient-landscape .doc:not(:has(.slide-page)){display:grid;grid-template-columns:1fr 300px;gap:16px;padding:12mm 14mm}
   body.orient-landscape .doc-header{grid-column:1/-1}
   body.orient-landscape .title-field{grid-column:1/-1;grid-row:2;margin-top:6px}
