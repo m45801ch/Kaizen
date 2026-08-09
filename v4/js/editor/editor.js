@@ -366,6 +366,12 @@ function selectMove(e){
     o.angle=Math.round(Math.atan2(p.y-o.y, p.x-o.x)*180/Math.PI);
   } else if(selDrag.mode==="resize"){
     applyResize(p, selDrag.handle);
+  } else if(selDrag.mode==="endpoint"){
+    if(selDrag.which==="a"){ o.x1=p.x; o.y1=p.y; }
+    else { o.x2=p.x; o.y2=p.y; }
+  } else if(selDrag.mode==="point"){
+    const pt=o.points[selDrag.pi];
+    if(pt){ pt.x=p.x; pt.y=p.y; }
   }
   redraw();
 }
