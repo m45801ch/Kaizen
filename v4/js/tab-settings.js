@@ -1,8 +1,72 @@
 /* 通用設定頁籤：API 供應商/Key/模型、圖片壓縮、A4 直橫向、LOGO */
-import { state, STORE } from "./store.js";
+import { state, STORE, DEFAULT_LOGO } from "./store.js";
 import { MODELS, HINTS, KEY_PLACEHOLDERS, fetchModels } from "./ai.js";
 
 const $ = id => document.getElementById(id);
+
+/* ---- 公司 LOGO ---- */
+function compressLogo(dataUrl){
+  return new Promise(resolve=>{
+    const img = new Image();
+    img.onload = () => {
+      const maxW = 360;
+      const scale = Math.min(1, maxW / (img.width || maxW));
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.max(1, Math.round((img.width || 1) * scale));
+      canvas.height = Math.max(1, Math.round((img.height || 1) * scale));
+      canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+      resolve(canvas.toDataURL("image/png"));
+    };
+    img.onerror = () => resolve(null);
+    img.src = dataUrl;
+  });
+}
+
+function applyLogo(src){
+  const img = $("logoImg");
+  const prev = $("logoPreview");
+  if(img) img.src = src;
+  if(prev) prev.src = src;
+}
+
+function initLogo(){
+  const preview = $("logoPreview");
+  if(!preview) return;
+  const custom = localStorage.getItem(STORE.logo) || DEFAULT_LOGO;
+  preview.src = custom;
+  $("logoChangeBtn").addEventListener("click", ()=> $("logoInput").click());
+  $("logoInput").addEventListener("change", ()=>{
+    const f = $("logoInput").files && $("logoInput").files[0];
+    $("logoInput").value = "";
+    if(!f) return;
+    if(f.type.indexOf("image/")!==0){
+      window.dispatchEvent(new CustomEvent("kaizen:status",{detail:{kind:"error",html:"請選擇圖片檔。"}}));
+      setTimeout(()=>window.dispatchEvent(new CustomEvent("kaizen:status-hide")),3000);
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = e => {
+      compressLogo(e.target.result).then(dataUrl=>{
+        if(!dataUrl){
+          window.dispatchEvent(new CustomEvent("kaizen:status",{detail:{kind:"error",html:"無法讀取該圖片檔。"}}));
+          setTimeout(()=>window.dispatchEvent(new CustomEvent("kaizen:status-hide")),3000);
+          return;
+        }
+        localStorage.setItem(STORE.logo, dataUrl);
+        applyLogo(dataUrl);
+        window.dispatchEvent(new CustomEvent("kaizen:status",{detail:{kind:"success",html:"公司LOGO 已更換。"}}));
+        setTimeout(()=>window.dispatchEvent(new CustomEvent("kaizen:status-hide")),3000);
+      });
+    };
+    reader.readAsDataURL(f);
+  });
+  $("logoResetBtn").addEventListener("click", ()=>{
+    localStorage.removeItem(STORE.logo);
+    applyLogo(DEFAULT_LOGO);
+    window.dispatchEvent(new CustomEvent("kaizen:status",{detail:{kind:"success",html:"已回復預設LOGO。"}}));
+    setTimeout(()=>window.dispatchEvent(new CustomEvent("kaizen:status-hide")),3000);
+  });
+}
 
 export function initSettings(){
   const providerSelect=$("providerSelect"), apiKey=$("apiKey"), toggleKey=$("toggleKey"),
@@ -88,6 +152,7 @@ export function initSettings(){
     localStorage.setItem(STORE.compressMax,String(state.compressMax));
   });
 
+  initLogo();
   renderProvider();
   if(state.keys[state.provider]) setTimeout(refreshModels,300);
 }
