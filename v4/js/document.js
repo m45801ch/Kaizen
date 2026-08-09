@@ -135,6 +135,16 @@ function layoutPhotos(side){
     if(bottom>maxBottom) maxBottom = bottom;
   });
   grid.style.height = maxBottom+"px";
+  const landscape = document.body.classList.contains("orient-landscape");
+  const printW = landscape
+    ? Math.round(Math.round(269*96/25.4) - 316) - 20
+    : Math.round((Math.round(180*96/25.4) - 11)/2) - 20;
+  if(zoneW>0){
+    let s = printW / zoneW;
+    s = Math.min(1, Math.max(0.3, s));
+    grid.style.setProperty("--ps", String(s));
+    grid.style.setProperty("--ph", String(maxBottom));
+  }
 }
 
 function bindDocument(){
