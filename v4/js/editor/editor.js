@@ -118,18 +118,35 @@ function updateHint(){
 }
 
 function toImg(e){
-  const r=$("editorCanvas").getBoundingClientRect(), s=editing.scale;
-  return { x:(e.clientX-r.left-editing.offsetX)/s, y:(e.clientY-r.top-editing.offsetY)/s };
+  const c=$("editorCanvas"), r=c.getBoundingClientRect();
+  const rot=((editing.overlay.rotate||0)%360);
+  const crop=editing.overlay.crop;
+  const iw=crop?crop.w:editing.img.width, ih=crop?crop.h:editing.img.height;
+  let x=e.clientX-r.left - c.width/2;
+  let y=e.clientY-r.top - c.height/2;
+  if(rot===90){ const t=x; x=y; y=-t; }
+  else if(rot===180){ x=-x; y=-y; }
+  else if(rot===270){ const t=x; x=-y; y=t; }
+  return { x:x/editing.scale + iw/2, y:y/editing.scale + ih/2 };
 }
 function fromImg(px,py){ return { x:editing.offsetX+px*editing.scale, y:editing.offsetY+py*editing.scale }; }
 
 function redraw(preview, d){
   const c=$("editorCanvas"), ctx=c.getContext("2d");
+  const rot=((editing.overlay.rotate||0)%360);
+  const rot90=rot%180===90;
+  const crop=editing.overlay.crop;
+  const iw=crop?crop.w:editing.img.width, ih=crop?crop.h:editing.img.height;
+  const s=editing.scale;
+  const cw=rot90?ih*s:iw*s, ch=rot90?iw*s:ih*s;
+  if(c.width!==Math.round(cw)||c.height!==Math.round(ch)){ c.width=Math.round(cw); c.height=Math.round(ch); }
   ctx.clearRect(0,0,c.width,c.height);
-  ctx.drawImage(editing.img, editing.offsetX, editing.offsetY, editing.img.width*editing.scale, editing.img.height*editing.scale);
   ctx.save();
-  ctx.translate(editing.offsetX, editing.offsetY);
-  ctx.scale(editing.scale, editing.scale);
+  ctx.translate(c.width/2,c.height/2);
+  ctx.rotate(rot*Math.PI/180);
+  ctx.drawImage(editing.img, crop?crop.x:0, crop?crop.y:0, iw, ih, -iw*s/2, -ih*s/2, iw*s, ih*s);
+  ctx.scale(s,s);
+  ctx.translate(-iw/2,-ih/2);
   drawOverlay(ctx, editing.overlay);
   if(preview&&d){
     ctx.strokeStyle=color; ctx.lineWidth=width;
@@ -153,16 +170,18 @@ function openEditor(side,id){
     current={side,id};
     undoStack=[];
     $("editorModal").classList.add("show");
-    const c=$("editorCanvas");
     const wrap=$("editorCanvasWrap");
+    const crop=editing.overlay.crop;
+    const rot=((editing.overlay.rotate||0)%360);
+    const rot90=rot%180===90;
+    const iw=crop?crop.w:img.width, ih=crop?crop.h:img.height;
+    const fw=rot90?ih:iw, fh=rot90?iw:ih;
     const maxW=(wrap?wrap.clientWidth:1200)-40;
     const maxH=(wrap?wrap.clientHeight:760)-40;
     const MAX=4;
-    let s=Math.min(MAX,maxW/img.width,maxH/img.height);
+    let s=Math.min(MAX,maxW/fw,maxH/fh);
     if(s<=0) s=1;
     editing.scale=s;
-    c.width=img.width*s; c.height=img.height*s;
-    if(editing.overlay.rotate%180===90){ c.width=img.height*s; c.height=img.width*s; }
     redraw();
     updateHint();
   };
