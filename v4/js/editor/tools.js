@@ -28,7 +28,7 @@ export function drawOverlay(ctx, overlay){
   });
   if(overlay.crop){
     ctx.strokeStyle="#DC2626"; ctx.lineWidth=2; ctx.setLineDash([6,4]);
-    ctx.strokeRect(overlay.crop.x,overlay.crop.y,overlay.crop.w,overlay.crop.h);
+    ctx.strokeRect(0,0,overlay.crop.w,overlay.crop.h);
     ctx.setLineDash([]);
   }
 }
@@ -36,7 +36,7 @@ export function drawOverlay(ctx, overlay){
 export function cropOverlay(overlay, crop, imgW, imgH){
   /* 將疊加座標從原圖座標轉為裁切後座標（以裁切區域左上為原點） */
   const shift=(pts)=>({ x:pts.x-crop.x, y:pts.y-crop.y });
-  const o={ rects:[], strokes:[], arrows:[], texts:[], rotate:overlay.rotate||0 };
+  const o={ rects:[], strokes:[], arrows:[], texts:[], rotate:overlay.rotate||0, crop:overlay.crop||null };
   (overlay.rects||[]).forEach(r=>o.rects.push({...r, x:r.x-crop.x, y:r.y-crop.y }));
   (overlay.strokes||[]).forEach(s=>o.strokes.push({...s, points:s.points.map(shift)}));
   (overlay.arrows||[]).forEach(a=>o.arrows.push({...a, x1:a.x1-crop.x, y1:a.y1-crop.y, x2:a.x2-crop.x, y2:a.y2-crop.y }));

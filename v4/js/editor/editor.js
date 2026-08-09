@@ -202,11 +202,16 @@ function undo(){
 }
 function applyCrop(r){
   if(!r||r.w<10||r.h<10) return;
+  const base=editing.overlay.crop;
+  const bx=base?base.x:0, by=base?base.y:0;
   const x=Math.max(0,Math.round(r.x)), y=Math.max(0,Math.round(r.y));
-  const w=Math.min(editing.img.width-x, Math.round(r.w)), h=Math.min(editing.img.height-y, Math.round(r.h));
+  const w=Math.min((base?base.w:editing.img.width)-x, Math.round(r.w));
+  const h=Math.min((base?base.h:editing.img.height)-y, Math.round(r.h));
   if(w<10||h<10) return;
-  editing.overlay.crop={x,y,w,h};
-  editing.overlay=cropOverlay(editing.overlay, {x,y,w,h});
+  const shifted=cropOverlay(editing.overlay, {x,y,w,h});
+  shifted.crop={ x:bx+x, y:by+y, w, h };
+  editing.overlay=shifted;
+  redraw();
 }
 function renderComposite(){
   const img=editing.img, ov=editing.overlay;
