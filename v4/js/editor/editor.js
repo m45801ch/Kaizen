@@ -69,7 +69,7 @@ export function initEditor(){
     fsVal.textContent=fontSize;
   });
   $("toolUndo").addEventListener("click",undo);
-  $("toolClear").addEventListener("click",()=>{ if(editing){ const ov=editing.overlay; if(ov&&(ov.rects.length||ov.strokes.length||ov.arrows.length||ov.texts.length||ov.crop||ov.rotate)) pushUndo(); editing.overlay={rects:[],strokes:[],arrows:[],texts:[],crop:null,rotate:0}; redraw(); } });
+  $("toolClear").addEventListener("click",()=>{ if(editing){ const ov=editing.overlay; if(ov&&(ov.rects.length||ov.strokes.length||ov.arrows.length||ov.texts.length||ov.crop||ov.rotate)) pushUndo(); editing.overlay={rects:[],strokes:[],arrows:[],texts:[],crop:null,rotate:0}; selected=null; selDrag=null; redraw(); } });
 
   /* 畫布互動 */
   const canvas=$("editorCanvas"), ctx=canvas.getContext("2d");
@@ -77,7 +77,7 @@ export function initEditor(){
   canvas.addEventListener("pointerdown",e=>{
     if(!editing) return;
     const p=toImg(e);
-    if(tool==="select"){ startSelect(p); return; }
+    if(tool==="select"){ canvas.setPointerCapture(e.pointerId); startSelect(p); return; }
     if(tool==="text"){
       const t=prompt("輸入文字：","");
       if(t){ pushUndo(); editing.overlay.texts.push({ x:p.x, y:p.y, text:t, color, size:fontSize, bold:true }); redraw(); }
@@ -152,20 +152,23 @@ function textRect(t){
 function hitTest(p){
   const ov=editing.overlay, T=8/editing.scale;
   for(let i=ov.texts.length-1;i>=0;i--){
-    const r=textRect(ov.texts[i]);
-    if(p.x>=r.x-T&&p.x<=r.x+r.w+T&&p.y>=r.y-T&&p.y<=r.y+r.h+T) return {type:"text",index:i};
+    const t=ov.texts[i], r=textRect(t);
+    const a=((t.angle||0)*Math.PI/180), cos=Math.cos(a), sin=Math.sin(a);
+    const dx=p.x-t.x, dy=p.y-t.y;
+    const lx=dx*cos+dy*sin, ly=-dx*sin+dy*cos;
+    if(lx>=-T&&lx<=r.w+T&&ly>=-T&&ly<=r.h+T) return {type:"text",index:i};
   }
-  for(let i=ov.rects.length-1;i>=0;i--){
-    const r=ov.rects[i];
-    if(p.x>=r.x-T&&p.x<=r.x+r.w+T&&p.y>=r.y-T&&p.y<=r.y+r.h+T) return {type:"rect",index:i};
+  for(let i=ov.arrows.length-1;i>=0;i--){
+    const a=ov.arrows[i];
+    if(distToSeg(p,{x:a.x1,y:a.y1},{x:a.x2,y:a.y2})<T) return {type:"arrow",index:i};
   }
   for(let i=ov.strokes.length-1;i>=0;i--){
     const pts=ov.strokes[i].points;
     for(let j=0;j<pts.length-1;j++) if(distToSeg(p,pts[j],pts[j+1])<T) return {type:"stroke",index:i};
   }
-  for(let i=ov.arrows.length-1;i>=0;i--){
-    const a=ov.arrows[i];
-    if(distToSeg(p,{x:a.x1,y:a.y1},{x:a.x2,y:a.y2})<T) return {type:"arrow",index:i};
+  for(let i=ov.rects.length-1;i>=0;i--){
+    const r=ov.rects[i];
+    if(p.x>=r.x-T&&p.x<=r.x+r.w+T&&p.y>=r.y-T&&p.y<=r.y+r.h+T) return {type:"rect",index:i};
   }
   return null;
 }
@@ -288,6 +291,7 @@ function pushUndo(){
 function undo(){
   if(!editing||!undoStack.length) return;
   editing.overlay=JSON.parse(undoStack.pop());
+  selected=null; selDrag=null;
   redraw();
 }
 function applyCrop(r){
@@ -311,7 +315,7 @@ function applyMove(dx,dy){
   else if(selected.type==="stroke"){ o.points.forEach(pt=>{ pt.x+=dx; pt.y+=dy; }); }
 }
 function startSelect(p){
-  const ov=editing.overlay, T=12/editing.scale;
+  const T=12/editing.scale;
   if(selected){
     const o=selObj();
     if(o){
@@ -321,16 +325,16 @@ function startSelect(p){
         const ox=r.w/2, oy=-20/editing.scale;
         const hx=o.x+ox*Math.cos(a)-oy*Math.sin(a);
         const hy=o.y+ox*Math.sin(a)+oy*Math.cos(a);
-        if(Math.hypot(p.x-hx,p.y-hy)<T){ pushUndo(); selDrag={mode:"rotate"}; redraw(); return; }
+        if(Math.hypot(p.x-hx,p.y-hy)<T){ pushUndo(); selDrag={mode:"rotate",pushed:true,baseAngle:o.angle||0,startAngle:Math.atan2(p.y-o.y,p.x-o.x)}; redraw(); return; }
       } else if(selected.type==="rect"){
         const h=rectHandleAt(p);
-        if(h){ pushUndo(); selDrag={mode:"resize",handle:h}; redraw(); return; }
+        if(h){ pushUndo(); selDrag={mode:"resize",pushed:true,handle:h}; redraw(); return; }
       } else if(selected.type==="arrow"){
-        if(Math.hypot(p.x-o.x1,p.y-o.y1)<T){ pushUndo(); selDrag={mode:"endpoint",which:"a"}; redraw(); return; }
-        if(Math.hypot(p.x-o.x2,p.y-o.y2)<T){ pushUndo(); selDrag={mode:"endpoint",which:"b"}; redraw(); return; }
+        if(Math.hypot(p.x-o.x1,p.y-o.y1)<T){ pushUndo(); selDrag={mode:"endpoint",pushed:true,which:"a"}; redraw(); return; }
+        if(Math.hypot(p.x-o.x2,p.y-o.y2)<T){ pushUndo(); selDrag={mode:"endpoint",pushed:true,which:"b"}; redraw(); return; }
       } else if(selected.type==="stroke"){
         for(let j=0;j<o.points.length;j++){
-          if(Math.hypot(p.x-o.points[j].x,p.y-o.points[j].y)<T){ pushUndo(); selDrag={mode:"point",pi:j}; redraw(); return; }
+          if(Math.hypot(p.x-o.points[j].x,p.y-o.points[j].y)<T){ pushUndo(); selDrag={mode:"point",pushed:true,pi:j}; redraw(); return; }
         }
       }
     }
@@ -338,8 +342,7 @@ function startSelect(p){
   const hit=hitTest(p);
   if(!hit){ selected=null; selDrag=null; redraw(); return; }
   selected=hit;
-  pushUndo();
-  selDrag={ mode:"move", start:{x:p.x,y:p.y} };
+  selDrag={ mode:"move", start:{x:p.x,y:p.y}, pushed:false };
   redraw();
 }
 function rectHandleAt(p){
@@ -357,13 +360,15 @@ function rectHandleAt(p){
 }
 function selectMove(e){
   if(!selDrag) return;
+  if(!selDrag.pushed){ pushUndo(); selDrag.pushed=true; }
   const p=toImg(e);
   const o=selObj(); if(!o) return;
   if(selDrag.mode==="move"){
     applyMove(p.x-selDrag.start.x, p.y-selDrag.start.y);
     selDrag.start={x:p.x,y:p.y};
   } else if(selDrag.mode==="rotate"){
-    o.angle=Math.round(Math.atan2(p.y-o.y, p.x-o.x)*180/Math.PI);
+    const cur=Math.atan2(p.y-o.y, p.x-o.x);
+    o.angle=Math.round(selDrag.baseAngle + (cur-selDrag.startAngle)*180/Math.PI);
   } else if(selDrag.mode==="resize"){
     applyResize(p, selDrag.handle);
   } else if(selDrag.mode==="endpoint"){
