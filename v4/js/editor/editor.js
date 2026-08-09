@@ -219,17 +219,30 @@ function drawSelection(ctx){
     ctx.translate(o.x,o.y);
     ctx.rotate(((o.angle||0)*Math.PI/180));
     ctx.strokeRect(0,0,r.w,r.h);
+    ctx.setLineDash([]);
+    ctx.beginPath(); ctx.arc(r.w/2,-20/editing.scale,4/editing.scale,0,Math.PI*2); ctx.stroke();
     ctx.restore();
   } else if(selected.type==="rect"){
     ctx.strokeRect(o.x,o.y,o.w,o.h);
+    ctx.setLineDash([]);
+    const hs=5/editing.scale;
+    [[o.x,o.y],[o.x+o.w/2,o.y],[o.x+o.w,o.y],[o.x,o.y+o.h/2],[o.x+o.w,o.y+o.h/2],[o.x,o.y+o.h],[o.x+o.w/2,o.y+o.h],[o.x+o.w,o.y+o.h]].forEach(([hx,hy])=>{
+      ctx.fillStyle="#fff"; ctx.fillRect(hx-hs/2,hy-hs/2,hs,hs);
+      ctx.strokeRect(hx-hs/2,hy-hs/2,hs,hs);
+    });
   } else if(selected.type==="arrow"){
     ctx.beginPath(); ctx.moveTo(o.x1,o.y1); ctx.lineTo(o.x2,o.y2); ctx.stroke();
+    ctx.setLineDash([]);
+    [[o.x1,o.y1],[o.x2,o.y2]].forEach(([hx,hy])=>{
+      ctx.beginPath(); ctx.arc(hx,hy,4/editing.scale,0,Math.PI*2); ctx.stroke();
+    });
   } else if(selected.type==="stroke"){
     const xs=o.points.map(p=>p.x), ys=o.points.map(p=>p.y);
     const x0=Math.min(...xs), y0=Math.min(...ys), x1=Math.max(...xs), y1=Math.max(...ys);
     ctx.strokeRect(x0,y0,x1-x0,y1-y0);
+    ctx.setLineDash([]);
+    o.points.forEach(pt=>{ ctx.beginPath(); ctx.arc(pt.x,pt.y,3/editing.scale,0,Math.PI*2); ctx.stroke(); });
   }
-  ctx.setLineDash([]);
 }
 
 function openEditor(side,id){
@@ -298,7 +311,30 @@ function applyMove(dx,dy){
   else if(selected.type==="stroke"){ o.points.forEach(pt=>{ pt.x+=dx; pt.y+=dy; }); }
 }
 function startSelect(p){
-  const ov=editing.overlay;
+  const ov=editing.overlay, T=12/editing.scale;
+  if(selected){
+    const o=selObj();
+    if(o){
+      if(selected.type==="text"){
+        const r=textRect(o);
+        const a=(o.angle||0)*Math.PI/180;
+        const ox=r.w/2, oy=-20/editing.scale;
+        const hx=o.x+ox*Math.cos(a)-oy*Math.sin(a);
+        const hy=o.y+ox*Math.sin(a)+oy*Math.cos(a);
+        if(Math.hypot(p.x-hx,p.y-hy)<T){ pushUndo(); selDrag={mode:"rotate"}; redraw(); return; }
+      } else if(selected.type==="rect"){
+        const h=rectHandleAt(p);
+        if(h){ pushUndo(); selDrag={mode:"resize",handle:h}; redraw(); return; }
+      } else if(selected.type==="arrow"){
+        if(Math.hypot(p.x-o.x1,p.y-o.y1)<T){ pushUndo(); selDrag={mode:"endpoint",which:"a"}; redraw(); return; }
+        if(Math.hypot(p.x-o.x2,p.y-o.y2)<T){ pushUndo(); selDrag={mode:"endpoint",which:"b"}; redraw(); return; }
+      } else if(selected.type==="stroke"){
+        for(let j=0;j<o.points.length;j++){
+          if(Math.hypot(p.x-o.points[j].x,p.y-o.points[j].y)<T){ pushUndo(); selDrag={mode:"point",pi:j}; redraw(); return; }
+        }
+      }
+    }
+  }
   const hit=hitTest(p);
   if(!hit){ selected=null; selDrag=null; redraw(); return; }
   selected=hit;
@@ -306,14 +342,43 @@ function startSelect(p){
   selDrag={ mode:"move", start:{x:p.x,y:p.y} };
   redraw();
 }
+function rectHandleAt(p){
+  const o=selObj(); if(!o) return null;
+  const T=10/editing.scale;
+  const hs=5/editing.scale;
+  const corners={ nw:[o.x,o.y], n:[o.x+o.w/2,o.y], ne:[o.x+o.w,o.y],
+                  w:[o.x,o.y+o.h/2], e:[o.x+o.w,o.y+o.h/2],
+                  sw:[o.x,o.y+o.h], s:[o.x+o.w/2,o.y+o.h], se:[o.x+o.w,o.y+o.h] };
+  for(const k in corners){
+    const [hx,hy]=corners[k];
+    if(Math.hypot(p.x-hx,p.y-hy)<T+hs) return k;
+  }
+  return null;
+}
 function selectMove(e){
   if(!selDrag) return;
   const p=toImg(e);
+  const o=selObj(); if(!o) return;
   if(selDrag.mode==="move"){
     applyMove(p.x-selDrag.start.x, p.y-selDrag.start.y);
     selDrag.start={x:p.x,y:p.y};
+  } else if(selDrag.mode==="rotate"){
+    o.angle=Math.round(Math.atan2(p.y-o.y, p.x-o.x)*180/Math.PI);
+  } else if(selDrag.mode==="resize"){
+    applyResize(p, selDrag.handle);
   }
   redraw();
+}
+function applyResize(p, h){
+  const o=selObj(); if(!o) return;
+  const MIN=10;
+  let x1=o.x, y1=o.y, x2=o.x+o.w, y2=o.y+o.h;
+  if(h.indexOf("w")!==-1) x1=p.x;
+  if(h.indexOf("e")!==-1) x2=p.x;
+  if(h.indexOf("n")!==-1) y1=p.y;
+  if(h.indexOf("s")!==-1) y2=p.y;
+  if(x2-x1<MIN||y2-y1<MIN) return;
+  o.x=x1; o.y=y1; o.w=x2-x1; o.h=y2-y1;
 }
 function selectEnd(){
   selDrag=null;
