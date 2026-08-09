@@ -200,6 +200,24 @@ function bindDocument(){
         if(p) window.dispatchEvent(new CustomEvent("kaizen:edit-photo",{detail:{side,id}}));
       });
     }
+    const ct=e.target.closest("[data-center]");
+    if(ct){
+      const id=ct.dataset.center;
+      ["before","after"].forEach(side=>{
+        const p=state.images[side].find(x=>x.id===id);
+        if(p){
+          const zone=$("photo-zone-"+side);
+          const zoneW=zone?Math.max(40,zone.clientWidth-24):800;
+          const zoneH=zone?Math.max(40,zone.clientHeight-24):600;
+          const w=p.dispW||260, h=p.dispH||Math.max(40,Math.round(260*((p.w&&p.h)?p.h/p.w:1)));
+          p.dispX=Math.max(0,Math.round((zoneW-w)/2));
+          p.dispY=Math.max(0,Math.round((zoneH-h)/2));
+          renderDocument();
+          persistImages();
+        }
+      });
+      return;
+    }
   });
 
   /* 照片移動：拖照片本體 */
