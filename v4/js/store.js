@@ -1,4 +1,6 @@
 /* 集中狀態與持久化：documentData + settings（localStorage / IndexedDB） */
+export { DEFAULT_LOGO } from "./logo-data.js";
+
 export const STORE = {
   provider:"kai.gen.provider.v1", key:"kai.gen.key.v1", model:"kai.gen.model.v1",
   form:"kai.gen.form.v1", override:"kai.gen.override.v1", orient:"kai.gen.orient.v1",
