@@ -146,9 +146,11 @@ function openEditor(side,id){
     $("editorModal").classList.add("show");
     const c=$("editorCanvas");
     const wrap=$("editorCanvasWrap");
-    const maxW=(wrap?wrap.clientWidth:760)-40;
-    const maxH=(wrap?wrap.clientHeight:560)-40;
-    const s=Math.min(1,maxW/img.width,maxH/img.height);
+    const maxW=(wrap?wrap.clientWidth:1200)-40;
+    const maxH=(wrap?wrap.clientHeight:760)-40;
+    const MAX=4;
+    let s=Math.min(MAX,maxW/img.width,maxH/img.height);
+    if(s<=0) s=1;
     editing.scale=s;
     c.width=img.width*s; c.height=img.height*s;
     if(editing.overlay.rotate%180===90){ c.width=img.height*s; c.height=img.width*s; }
