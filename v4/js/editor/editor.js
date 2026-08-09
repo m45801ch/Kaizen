@@ -36,7 +36,7 @@ export function initEditor(){
       '<span class="sep"></span>'+
       '<label class="font-size-wrap">字<output id="editorFontSizeVal" for="editorFontSize">32</output>px</label>'+
       '<input type="range" id="editorFontSize" min="12" max="96" step="1" value="32">'+
-      '<label class="font-size-wrap">粗<canvas id="editorWidthPrev" width="40" height="22"></canvas></label>'+
+      '<label class="font-size-wrap">粗<canvas id="editorWidthPrev" width="40" height="34"></canvas></label>'+
       '<input type="range" id="editorWidth" min="1" max="30" step="1" value="4">'+
       '<span class="sep"></span>'+
       '<button type="button" class="tool" id="toolUndo" title="復原">↶</button>'+
@@ -73,11 +73,11 @@ export function initEditor(){
   const wRange=$("editorWidth"), wPrev=$("editorWidthPrev");
   function drawWidthPrev(){
     const c=wPrev.getContext("2d");
-    c.clearRect(0,0,40,22);
+    c.clearRect(0,0,40,34);
     c.strokeStyle="#1E293B";
     c.lineCap="round";
     c.lineWidth=parseInt(wRange.value,10);
-    c.beginPath(); c.moveTo(6,11); c.lineTo(34,11); c.stroke();
+    c.beginPath(); c.moveTo(16,17); c.lineTo(24,17); c.stroke();
   }
   wRange.addEventListener("input",()=>{ width=parseInt(wRange.value,10); drawWidthPrev(); });
   drawWidthPrev();
