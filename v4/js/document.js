@@ -105,8 +105,8 @@ export function renderDocument(){
   /* 綁定 */
   bindDocument();
   /* LOGO */
-  const logo = localStorage.getItem("kai.gen.logo.v1") || DEFAULT_LOGO;
-  if(logo) $("logoImg").src = logo;
+  const el = $("logoImg");
+  if(el) el.src = localStorage.getItem("kai.gen.logo.v1") || DEFAULT_LOGO;
 }
 
 function bindDocument(){

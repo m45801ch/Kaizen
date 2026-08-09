@@ -9,6 +9,7 @@ function compressLogo(dataUrl){
   return new Promise(resolve=>{
     const img = new Image();
     img.onload = () => {
+      if(!img.width || !img.height){ resolve(null); return; }
       const maxW = 360;
       const scale = Math.min(1, maxW / (img.width || maxW));
       const canvas = document.createElement("canvas");
@@ -52,11 +53,21 @@ function initLogo(){
           setTimeout(()=>window.dispatchEvent(new CustomEvent("kaizen:status-hide")),3000);
           return;
         }
-        localStorage.setItem(STORE.logo, dataUrl);
+        try{
+          localStorage.setItem(STORE.logo, dataUrl);
+        }catch(err){
+          window.dispatchEvent(new CustomEvent("kaizen:status",{detail:{kind:"error",html:"儲存失敗（容量不足），無法更換LOGO。"}}));
+          setTimeout(()=>window.dispatchEvent(new CustomEvent("kaizen:status-hide")),3000);
+          return;
+        }
         applyLogo(dataUrl);
         window.dispatchEvent(new CustomEvent("kaizen:status",{detail:{kind:"success",html:"公司LOGO 已更換。"}}));
         setTimeout(()=>window.dispatchEvent(new CustomEvent("kaizen:status-hide")),3000);
       });
+    };
+    reader.onerror = ()=>{
+      window.dispatchEvent(new CustomEvent("kaizen:status",{detail:{kind:"error",html:"無法讀取該圖片檔。"}}));
+      setTimeout(()=>window.dispatchEvent(new CustomEvent("kaizen:status-hide")),3000);
     };
     reader.readAsDataURL(f);
   });
