@@ -172,4 +172,36 @@ function bindDocument(){
       });
     }
   });
+
+  /* 照片縮放把手（Pointer Events） */
+  doc.addEventListener("pointerdown", e=>{
+    const handle = e.target.closest(".resize-handle");
+    if(!handle) return;
+    e.preventDefault();
+    const id = handle.dataset.resize;
+    const thumb = handle.closest(".photo-thumb");
+    if(!thumb) return;
+    const zone = thumb.closest(".photo-zone");
+    const maxW = zone ? Math.max(40, zone.clientWidth - 10) : 800;
+    const startX = e.clientX, startY = e.clientY;
+    const startW = thumb.offsetWidth, startH = thumb.offsetHeight;
+    function onMove(ev){
+      const w = Math.min(maxW, Math.max(40, startW + (ev.clientX - startX)));
+      const h = Math.max(40, startH + (ev.clientY - startY));
+      thumb.style.width = w+"px";
+      thumb.style.height = h+"px";
+    }
+    function onUp(){
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+      const w = thumb.offsetWidth, h = thumb.offsetHeight;
+      ["before","after"].forEach(side=>{
+        const p = state.images[side].find(x=>x.id===id);
+        if(p){ p.dispW = w; p.dispH = h; }
+      });
+      persistImages();
+    }
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+  });
 }
