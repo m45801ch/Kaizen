@@ -163,6 +163,13 @@ export function initSettings(){
     localStorage.setItem(STORE.compressMax,String(state.compressMax));
   });
 
+  document.querySelectorAll(".panel-head.collapsible").forEach(head=>{
+    head.addEventListener("click",()=>{
+      const panel=head.closest(".panel");
+      if(panel) panel.classList.toggle("collapsed");
+    });
+  });
+
   initLogo();
   renderProvider();
   if(state.keys[state.provider]) setTimeout(refreshModels,300);

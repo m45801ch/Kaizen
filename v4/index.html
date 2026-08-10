@@ -74,33 +74,35 @@
 
     <!-- 通用設定頁籤 -->
     <section class="tab-panel" id="tab-settings">
-      <div class="panel">
-        <div class="panel-head"><span class="bar"></span>API 設定</div>
-        <div class="field">
-          <label for="providerSelect">AI 供應商</label>
-          <select id="providerSelect">
-            <option value="gemini">Google Gemini</option>
-            <option value="openai">OpenAI</option>
-            <option value="openrouter">OpenRouter</option>
-            <option value="groq">Groq</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="apiKey">API Key</label>
-          <div class="key-wrap">
-            <input type="password" id="apiKey" autocomplete="off" spellcheck="false" placeholder="貼上你的 API Key…">
-            <button type="button" class="toggle" id="toggleKey">顯示</button>
+      <div class="panel collapsed">
+        <div class="panel-head collapsible"><span class="bar"></span>API 設定<span class="chevron">▾</span></div>
+        <div class="panel-body">
+          <div class="field">
+            <label for="providerSelect">AI 供應商</label>
+            <select id="providerSelect">
+              <option value="gemini">Google Gemini</option>
+              <option value="openai">OpenAI</option>
+              <option value="openrouter">OpenRouter</option>
+              <option value="groq">Groq</option>
+            </select>
           </div>
-          <div class="hint" id="keyHint"></div>
-        </div>
-        <div class="field">
-          <label for="model">模型</label>
-          <div class="key-wrap">
-            <select id="model"></select>
+          <div class="field">
+            <label for="apiKey">API Key</label>
+            <div class="key-wrap">
+              <input type="password" id="apiKey" autocomplete="off" spellcheck="false" placeholder="貼上你的 API Key…">
+              <button type="button" class="toggle" id="toggleKey">顯示</button>
+            </div>
+            <div class="hint" id="keyHint"></div>
           </div>
-          <div class="hint" id="modelHint"></div>
+          <div class="field">
+            <label for="model">模型</label>
+            <div class="key-wrap">
+              <select id="model"></select>
+            </div>
+            <div class="hint" id="modelHint"></div>
+          </div>
+          <button type="button" class="btn btn-outline btn-sm" id="refreshModelsBtn" style="width:100%">重新載入模型清單 ⟳</button>
         </div>
-        <button type="button" class="btn btn-outline btn-sm" id="refreshModelsBtn" style="width:100%">重新載入模型清單 ⟳</button>
       </div>
 
       <div class="panel">
