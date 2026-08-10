@@ -71,11 +71,20 @@ export default {
     const chartType = s.chartType==="pie" ? "pie" : "bar";
     const photosBefore = (d.photos&&d.photos.before)||[];
     const photosAfter = (d.photos&&d.photos.after)||[];
+    const slidePhoto = (p, label)=>{
+      if(!p) return "";
+      const ratio = (p.w && p.h) ? p.h/p.w : 1;
+      const sz = (d.slidePhotoSize && d.slidePhotoSize[p.id]) || null;
+      const w = sz ? sz.w : 240;
+      const h = sz ? sz.h : Math.max(40, Math.round(240*ratio));
+      return '<div class="slide-photo"><span class="slide-photo-tag">'+label+'</span>'+
+        '<div class="slide-photo-frame" data-slide-photo="'+esc(p.id)+'" style="width:'+w+'px;height:'+h+'px">'+
+        '<img src="'+esc(p.previewDataUrl||p.dataUrl)+'" alt="'+label+'">'+
+        '<span class="resize-handle" data-slide-resize="'+esc(p.id)+'" title="調整尺寸"></span>'+
+        "</div></div>";
+    };
     const photoBlock = (photosBefore.length||photosAfter.length)
-      ? '<div class="slide-photos">'+
-        (photosBefore[0]?'<div class="slide-photo"><span class="slide-photo-tag">改善前</span><img src="'+esc(photosBefore[0].previewDataUrl||photosBefore[0].dataUrl)+'" alt="改善前"></div>':"")+
-        (photosAfter[0]?'<div class="slide-photo"><span class="slide-photo-tag">改善後</span><img src="'+esc(photosAfter[0].previewDataUrl||photosAfter[0].dataUrl)+'" alt="改善後"></div>':"")+
-      "</div>"
+      ? '<div class="slide-photos">'+slidePhoto(photosBefore[0], "改善前")+slidePhoto(photosAfter[0], "改善後")+"</div>"
       : "";
     return '<div class="slide-page">'+
       '<div class="slide-tag">改善提案簡報</div>'+
