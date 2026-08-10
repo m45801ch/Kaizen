@@ -12,20 +12,14 @@ function status(kind,html){
 }
 
 function sources(){
-  const srcBefore = state.editSide.before==="left"
-    ? ($("conv-before").value.trim()||$("f-before").value.trim())
-    : ($("f-before").value.trim()||$("conv-before").value.trim());
-  const srcAfter = state.editSide.after==="left"
-    ? ($("conv-after").value.trim()||$("f-after").value.trim())
-    : ($("f-after").value.trim()||$("conv-after").value.trim());
-  return { srcBefore, srcAfter };
+  return { srcBefore: $("conv-before").value.trim(), srcAfter: $("conv-after").value.trim() };
 }
 
 export async function generateAll(){
   const key=getKey();
   if(!key){ status("error","請先在「通用設定」輸入 API Key。"); return; }
   const { srcBefore, srcAfter } = sources();
-  if(!srcBefore && !srcAfter){ status("error","請先輸入改善前或改善後的描述（左側正式措辭欄位或右側欄位皆可）。"); return; }
+  if(!srcBefore && !srcAfter){ status("error","請先於左側「正式措辭描述」欄位輸入改善前或改善後的內容。"); return; }
   const d={ title:data.title, before:srcBefore, after:srcAfter, benefits:data.benefits };
   const model=getModel();
   const btn=$("generateBtn");
