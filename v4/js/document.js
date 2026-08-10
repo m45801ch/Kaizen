@@ -233,6 +233,15 @@ function bindDocument(){
       });
       return;
     }
+    const lv=e.target.closest("[data-level-set]");
+    if(lv){
+      ["before","after"].forEach(()=>{});
+      data.extra = data.extra||{};
+      data.extra.safetyLevel=lv.dataset.levelSet;
+      renderDocument();
+      saveForm();
+      return;
+    }
     const rt=e.target.closest("[data-reset-ratio]");
     if(rt){
       const id=rt.dataset.resetRatio;
