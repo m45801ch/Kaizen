@@ -35,6 +35,8 @@ export async function generateAll(){
     if(results[1].before_conv!==undefined) $("conv-before").value=String(results[1].before_conv);
     if(results[1].after_conv!==undefined) $("conv-after").value=String(results[1].after_conv);
     CONV_IDS.forEach(id=>autoResize($(id)));
+    renderDocument();
+    renderAllAnalysis();
     status("success","已同步完成自動填表與正式措辭。");
     setTimeout(()=>window.dispatchEvent(new CustomEvent("kaizen:status-hide")),5000);
   }catch(err){
