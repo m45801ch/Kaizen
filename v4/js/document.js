@@ -250,7 +250,7 @@ function bindDocument(){
   doc.addEventListener("pointerdown", e=>{
     const thumb = e.target.closest(".photo-thumb");
     if(!thumb) return;
-    if(e.target.closest(".resize-handle,.remove,.edit-btn,.center-btn")) return;
+    if(e.target.closest(".resize-handle,.remove,.edit-btn,.center-btn,.ratio-btn")) return;
     const id = thumb.querySelector("[data-resize]") ? thumb.querySelector("[data-resize]").dataset.resize : null;
     if(!id) return;
     e.preventDefault();
