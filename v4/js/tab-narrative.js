@@ -79,7 +79,8 @@ export async function generateSlide(){
   const key=getKey();
   if(!key){ status("error","請先在「通用設定」輸入 API Key。"); return; }
   syncFromDom();
-  const d={ title:data.title, before:data.before, after:data.after, benefits:data.benefits };
+  const { srcBefore, srcAfter } = sources();
+  const d={ title:data.title, before:srcBefore||data.before, after:srcAfter||data.after, benefits:data.benefits };
   const model=getModel();
   const btn=$("slideBtn");
   btn.disabled=true;
