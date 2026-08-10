@@ -360,34 +360,34 @@ function bindDocument(){
   });
 
   /* 簡報照片縮放把手（Pointer Events） */
-  if(getTemplate(state.template).id==="slide"){
-    doc.addEventListener("pointerdown", e=>{
-      const handle = e.target.closest("[data-slide-resize]");
-      if(!handle) return;
-      e.preventDefault();
-      const id = handle.dataset.slideResize;
-      const frame = handle.closest(".slide-photo-frame");
-      if(!frame) return;
-      const zone = frame.closest(".slide-photos");
-      const maxW = zone ? Math.max(40, zone.clientWidth - 24) : 800;
-      const startX = e.clientX, startY = e.clientY;
-      const startW = frame.offsetWidth, startH = frame.offsetHeight;
-      function onMove(ev){
-        const w = Math.min(maxW, Math.max(40, startW + (ev.clientX - startX)));
-        const h = Math.max(40, startH + (ev.clientY - startY));
-        frame.style.width = w+"px";
-        frame.style.height = h+"px";
-      }
-      function onUp(){
-        handle.removeEventListener("pointermove", onMove);
-        handle.removeEventListener("pointerup", onUp);
-        state.slidePhotoSize[id] = { w: frame.offsetWidth, h: frame.offsetHeight };
-      }
-      handle.setPointerCapture(e.pointerId);
-      handle.addEventListener("pointermove", onMove);
-      handle.addEventListener("pointerup", onUp);
-    });
-  }
+  doc.addEventListener("pointerdown", e=>{
+    if(getTemplate(state.template).id!=="slide") return;
+    const handle = e.target.closest("[data-slide-resize]");
+    if(!handle) return;
+    e.preventDefault();
+    const id = handle.dataset.slideResize;
+    const frame = handle.closest(".slide-photo-frame");
+    if(!frame) return;
+    const zone = frame.closest(".slide-photos");
+    const maxW = zone ? Math.max(40, zone.clientWidth - 24) : 800;
+    const maxH = zone ? Math.max(40, zone.clientHeight - 24) : 600;
+    const startX = e.clientX, startY = e.clientY;
+    const startW = frame.offsetWidth, startH = frame.offsetHeight;
+    function onMove(ev){
+      const w = Math.min(maxW, Math.max(40, startW + (ev.clientX - startX)));
+      const h = Math.min(maxH, Math.max(40, startH + (ev.clientY - startY)));
+      frame.style.width = w+"px";
+      frame.style.height = h+"px";
+    }
+    function onUp(){
+      handle.removeEventListener("pointermove", onMove);
+      handle.removeEventListener("pointerup", onUp);
+      state.slidePhotoSize[id] = { w: frame.offsetWidth, h: frame.offsetHeight };
+    }
+    handle.setPointerCapture(e.pointerId);
+    handle.addEventListener("pointermove", onMove);
+    handle.addEventListener("pointerup", onUp);
+  });
 }
 
 function redrawSlideChart(){
