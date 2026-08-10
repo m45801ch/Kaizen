@@ -41,13 +41,13 @@ export function renderAnalysis(side){
 export function renderAllAnalysis(){ ["before","after"].forEach(renderAnalysis); }
 
 /* AI 結果填入右側 */
-export function fillForm(obj){
+export function fillForm(obj, force){
   const map={ title:"f-title", before:"f-before", after:"f-after", benefit1:"f-benefit-1", benefit2:"f-benefit-2", benefit3:"f-benefit-3" };
   Object.keys(map).forEach(k=>{
     const v = obj[k]!==undefined&&obj[k]!==null?String(obj[k]):"";
     const el=$(map[k]);
     if(!v||!el) return;
-    if(state.override || !el.value.trim()) el.value=v;
+    if(force || state.override || !el.value.trim()) el.value=v;
   });
   ["f-title","f-before","f-after","f-benefit-1","f-benefit-2","f-benefit-3"].forEach(id=>autoResize($(id)));
   if(getTemplate(state.template).id==="safety"){

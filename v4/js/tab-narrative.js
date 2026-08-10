@@ -37,7 +37,7 @@ export async function generateAll(){
       callForProvider(state.provider,key,model,buildPrompt(d)),
       callForProvider(state.provider,key,model,buildColloquialPrompt(srcBefore,srcAfter))
     ]);
-    fillForm(results[0]);
+    fillForm(results[0], true);
     if(results[1].before_conv!==undefined) $("conv-before").value=String(results[1].before_conv);
     if(results[1].after_conv!==undefined) $("conv-after").value=String(results[1].after_conv);
     CONV_IDS.forEach(id=>autoResize($(id)));
