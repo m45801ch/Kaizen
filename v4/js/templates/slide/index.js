@@ -7,7 +7,7 @@ function gaBarChart(benefits){
     const m = /(\d+(?:\.\d+)?)\s*%/.exec(String(b));
     return m ? Math.max(0, Math.min(100, parseFloat(m[1]))) : Math.round(100/benefits.length);
   });
-  const barW = Math.max(8, 260/benefits.length);
+  const barW = Math.min(34, Math.max(10, 260/benefits.length));
   const bars = benefits.map((b,i)=>{
     const h = Math.max(4, Math.round(vals[i]/100*120));
     const y = 130 - h;
