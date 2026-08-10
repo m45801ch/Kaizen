@@ -229,6 +229,21 @@ function bindDocument(){
       });
       return;
     }
+    const rt=e.target.closest("[data-reset-ratio]");
+    if(rt){
+      const id=rt.dataset.resetRatio;
+      ["before","after"].forEach(side=>{
+        const p=state.images[side].find(x=>x.id===id);
+        if(p){
+          const ratio=(p.w&&p.h)?p.h/p.w:1;
+          p.dispW=260;
+          p.dispH=Math.max(40,Math.round(260*ratio));
+          renderDocument();
+          persistImages();
+        }
+      });
+      return;
+    }
   });
 
   /* 照片移動：拖照片本體 */

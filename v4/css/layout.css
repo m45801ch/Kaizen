@@ -127,6 +127,13 @@ main{flex:1;padding:24px 28px;min-width:0}
 }
 .photo-thumb:hover .center-btn{opacity:1}
 .photo-thumb .center-btn:hover{color:var(--primary)}
+.photo-thumb .ratio-btn{
+  position:absolute;top:34px;left:6px;width:22px;height:22px;border-radius:50%;
+  background:rgba(255,255,255,.9);color:var(--text);border:none;cursor:pointer;font-size:14px;line-height:1;
+  display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .15s;box-shadow:var(--shadow-sm);
+}
+.photo-thumb:hover .ratio-btn{opacity:1}
+.photo-thumb .ratio-btn:hover{color:var(--primary)}
 .photo-thumb:hover .remove,.photo-thumb:hover .edit-btn{opacity:1}
 .photo-thumb .remove:hover{background:var(--danger)}
 .photo-thumb .edit-btn:hover{color:var(--primary)}
@@ -231,7 +238,7 @@ body.orient-landscape .benefit-col:last-child{border-bottom:none}
   .photo-zone{border:none;background:none;padding:0;margin-top:6px;min-height:0}
   .kaizen-box .photo-zone{border:none;padding:6px 10px 8px;margin:0;background:#fff}
   .kaizen-box .analysis{margin-top:6px}
-  .photo-add,.photo-empty,.photo-thumb .remove,.photo-thumb .edit-btn,.photo-thumb .resize-handle,.photo-thumb .center-btn{display:none!important}
+  .photo-add,.photo-empty,.photo-thumb .remove,.photo-thumb .edit-btn,.photo-thumb .resize-handle,.photo-thumb .center-btn,.photo-thumb .ratio-btn{display:none!important}
   .photo-grid{position:relative;min-height:0;overflow:visible;transform:scale(var(--ps,1));transform-origin:top left;height:calc(var(--ph,64px)*var(--ps,1))!important}
   .photo-thumb{position:absolute;border:1px solid var(--line);border-radius:6px;overflow:hidden;box-shadow:none}
   .photo-thumb img{object-fit:fill}

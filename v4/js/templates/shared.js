@@ -28,6 +28,7 @@ export function photoZone(side, photos){
       '<button type="button" class="remove" data-remove="'+esc(p.id)+'" title="移除照片">✕</button>'+
       '<button type="button" class="edit-btn" data-edit="'+esc(p.id)+'" title="編輯照片">✎</button>'+
       '<button type="button" class="center-btn" data-center="'+esc(p.id)+'" title="置中">◎</button>'+
+      '<button type="button" class="ratio-btn" data-reset-ratio="'+esc(p.id)+'" title="恢復原比例">⟲</button>'+
       '<span class="resize-handle" data-resize="'+esc(p.id)+'" title="調整尺寸"></span>'+
     "</div>";
   }).join("");
