@@ -164,10 +164,19 @@ export function initSettings(){
   });
 
   document.querySelectorAll(".panel-head.collapsible").forEach(head=>{
-    head.addEventListener("click",()=>{
-      const panel=head.closest(".panel");
+    const panel=head.closest(".panel");
+    const sync=()=>{
+      if(panel) head.setAttribute("aria-expanded", panel.classList.contains("collapsed")?"false":"true");
+    };
+    const toggle=()=>{
       if(panel) panel.classList.toggle("collapsed");
+      sync();
+    };
+    head.addEventListener("click",toggle);
+    head.addEventListener("keydown",e=>{
+      if(e.key==="Enter"||e.key===" "){ e.preventDefault(); toggle(); }
     });
+    sync();
   });
 
   initLogo();
