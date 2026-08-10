@@ -13,8 +13,8 @@ export default {
     const photosAfter = (d.photos&&d.photos.after)||[];
     const photoBlock = (photosBefore.length||photosAfter.length)
       ? '<div class="slide-photos">'+
-        (photosBefore.length?'<div class="slide-photo"><span class="slide-photo-tag">改善前</span><img src="'+esc(photosBefore[0].previewDataUrl||photosBefore[0].dataUrl)+'" alt="改善前"></div>':"")+
-        (photosAfter.length?'<div class="slide-photo"><span class="slide-photo-tag">改善後</span><img src="'+esc(photosAfter[0].previewDataUrl||photosAfter[0].dataUrl)+'" alt="改善後"></div>':"")+
+        (photosBefore[0]?'<div class="slide-photo"><span class="slide-photo-tag">改善前</span><img src="'+esc(photosBefore[0].previewDataUrl||photosBefore[0].dataUrl)+'" alt="改善前"></div>':"")+
+        (photosAfter[0]?'<div class="slide-photo"><span class="slide-photo-tag">改善後</span><img src="'+esc(photosAfter[0].previewDataUrl||photosAfter[0].dataUrl)+'" alt="改善後"></div>':"")+
       "</div>"
       : "";
     return '<div class="slide-page">'+
