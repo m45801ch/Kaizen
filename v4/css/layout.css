@@ -99,10 +99,10 @@ main{flex:1;padding:24px 28px;min-width:0}
 .photo-zone.dragover{border-color:var(--primary);background:var(--primary-soft)}
 .photo-grid{position:relative;min-height:64px}
 .photo-thumb{
-  position:absolute;border-radius:10px;overflow:hidden;border:1px solid var(--line);
+  position:absolute;border-radius:10px;border:1px solid var(--line);
   background:var(--surface);box-shadow:var(--shadow-sm);
 }
-.photo-thumb img{width:100%;height:100%;object-fit:fill;display:block}
+.photo-thumb img{width:100%;height:100%;object-fit:fill;display:block;border-radius:9px}
 .photo-thumb .resize-handle{
   position:absolute;right:0;bottom:0;width:16px;height:16px;cursor:se-resize;
   opacity:0;transition:opacity .15s;touch-action:none;
