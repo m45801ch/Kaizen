@@ -195,6 +195,9 @@ function bindDocument(){
     zone.addEventListener("drop",e=>{ if(e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files.length) addFiles(side,e.dataTransfer.files); });
   });
 
+  if(doc.dataset.bound) return;
+  doc.dataset.bound = "1";
+
   /* 照片縮圖：移除/編輯（事件委派） */
   doc.addEventListener("click",e=>{
     const rm=e.target.closest("[data-remove]");
