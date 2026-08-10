@@ -21,7 +21,7 @@ export function syncFromDom(){
   data.benefits[2] = $("f-benefit-3")?$("f-benefit-3").value:"";
   /* 模板專用欄位 */
   data.extra = data.extra || {};
-  if(tpl.id==="safety") data.extra.safetyLevel = $("f-safety-level")?$("f-safety-level").value:"";
+  if(tpl.id==="safety"){ data.extra = data.extra||{}; if(!data.extra.safetyLevel) data.extra.safetyLevel=""; }
   if(tpl.id==="quality"){ data.extra.qualityUnit = $("f-quality-unit")?$("f-quality-unit").value:""; data.extra.qualityStd = $("f-quality-std")?$("f-quality-std").value:""; }
   saveForm();
 }
@@ -50,6 +50,10 @@ export function fillForm(obj){
     if(state.override || !el.value.trim()) el.value=v;
   });
   ["f-title","f-before","f-after","f-benefit-1","f-benefit-2","f-benefit-3"].forEach(id=>autoResize($(id)));
+  if(getTemplate(state.template).id==="safety"){
+    const lv=String(obj.safetyLevel||"");
+    if(lv==="高"||lv==="中"||lv==="低"){ data.extra = data.extra||{}; data.extra.safetyLevel=lv; }
+  }
   renderAllAnalysis();
   syncFromDom();
 }
