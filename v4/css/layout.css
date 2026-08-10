@@ -141,10 +141,10 @@ main{flex:1;padding:24px 28px;min-width:0}
 /* 分析列點（下方說明） */
 .analysis{display:flex;flex-direction:column;flex:1;min-height:0}
 .kaizen-box .analysis{
-  border:1px solid var(--line);border-radius:10px;margin:0 10px 10px;background:var(--surface);overflow:hidden;
+  border:1px solid var(--line);border-radius:10px;margin:0 10px 10px;background:var(--surface);
 }
 .kaizen-box .photo-zone{margin-bottom:10px}
-.analysis .analysis-edit{min-height:64px;flex:1}
+.analysis .analysis-edit{min-height:64px}
 .analysis .analysis-preview{flex:1;padding:12px 14px;font-size:13.5px;line-height:1.8;display:none;cursor:text}
 .analysis-preview:hover{background:var(--surface)}
 .al-line{display:flex;gap:9px;align-items:flex-start;padding:2px 0}

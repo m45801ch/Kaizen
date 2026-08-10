@@ -36,6 +36,7 @@ export function renderAnalysis(side){
   const showEdit = editing || !text;
   prev.style.display = showEdit?"none":"block";
   ta.style.display = showEdit?"block":"none";
+  if(showEdit) autoResize(ta);
 }
 export function renderAllAnalysis(){ ["before","after"].forEach(renderAnalysis); }
 
