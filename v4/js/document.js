@@ -156,7 +156,7 @@ function bindDocument(){
   const doc=$("doc");
 
   /* 表單輸入 */
-  ["f-title","f-before","f-after","f-benefit-1","f-benefit-2","f-benefit-3","f-safety-level","f-quality-unit","f-quality-std"].forEach(id=>{
+  ["f-title","f-before","f-after","f-benefit-1","f-benefit-2","f-benefit-3","f-quality-unit","f-quality-std"].forEach(id=>{
     const el=$(id);
     if(!el) return;
     el.addEventListener("input",()=>{
@@ -235,7 +235,6 @@ function bindDocument(){
     }
     const lv=e.target.closest("[data-level-set]");
     if(lv){
-      ["before","after"].forEach(()=>{});
       data.extra = data.extra||{};
       data.extra.safetyLevel=lv.dataset.levelSet;
       renderDocument();

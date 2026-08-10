@@ -13,7 +13,7 @@ body.tpl-safety .title-label{color:#141414}
 body.tpl-safety .doc-title{color:#141414}
 /* 危險等級 */
 body.tpl-safety .ga-level-row{
-  display:flex;align-items:center;gap:10px;margin:10px 0 16px;flex-wrap:wrap;
+  display:flex;align-items:center;gap:8px;margin:10px 0 16px;flex-wrap:wrap;
 }
 body.tpl-safety .ga-level-label{
   font-size:13px;font-weight:900;letter-spacing:.05em;color:#141414;
