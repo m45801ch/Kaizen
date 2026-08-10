@@ -208,7 +208,10 @@ function bindDocument(){
         else {
           const m=/^([a-zA-Z]+)-(\d+)$/.exec(f);
           if(m&&m[1]==="keyPoints"&&s.keyPoints[+m[2]]!==undefined) s.keyPoints[+m[2]]=el.textContent;
-          if(m&&m[1]==="benefits"&&s.benefits[+m[2]]!==undefined){ s.benefits[+m[2]]=el.textContent; redrawSlideChart(); }
+          if(m&&m[1]==="benefits"&&s.benefits[+m[2]]!==undefined){
+            s.benefits[+m[2]]=el.textContent;
+            if(/(\d+(?:\.\d+)?)\s*%/.test(el.textContent)) redrawSlideChart();
+          }
         }
         saveForm();
       });
