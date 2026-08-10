@@ -1,6 +1,7 @@
 /* 右側文件：依目前模板渲染 + 事件綁定 + 照片上傳/壓縮 */
 import { state, data, saveForm, persistImages, DEFAULT_LOGO } from "./store.js";
 import { getTemplate } from "./templates/index.js";
+import { gaChartSvg } from "./templates/slide/index.js";
 import { buildLines } from "./analysis.js";
 
 const $ = id => document.getElementById(id);
@@ -195,6 +196,25 @@ function bindDocument(){
     zone.addEventListener("drop",e=>{ if(e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files.length) addFiles(side,e.dataTransfer.files); });
   });
 
+  /* 簡報文字直接編輯 */
+  if(getTemplate(state.template).id==="slide"){
+    doc.querySelectorAll("[data-slide-field]").forEach(el=>{
+      el.addEventListener("input",()=>{
+        const f=el.dataset.slideField;
+        const s=data.slide;
+        if(!s) return;
+        if(f==="slideTitle") s.slideTitle=el.textContent;
+        else if(f==="conclusion") s.conclusion=el.textContent;
+        else {
+          const m=/^([a-zA-Z]+)-(\d+)$/.exec(f);
+          if(m&&m[1]==="keyPoints"&&s.keyPoints[+m[2]]!==undefined) s.keyPoints[+m[2]]=el.textContent;
+          if(m&&m[1]==="benefits"&&s.benefits[+m[2]]!==undefined){ s.benefits[+m[2]]=el.textContent; redrawSlideChart(); }
+        }
+        saveForm();
+      });
+    });
+  }
+
   if(doc.dataset.bound) return;
   doc.dataset.bound = "1";
 
@@ -335,4 +355,12 @@ function bindDocument(){
     handle.addEventListener("pointermove", onMove);
     handle.addEventListener("pointerup", onUp);
   });
+}
+
+function redrawSlideChart(){
+  const box=document.querySelector("#doc .slide-benefits");
+  if(!box||!data.slide||!Array.isArray(data.slide.benefits)||!data.slide.benefits.length) return;
+  const chartType=data.slide.chartType==="pie" ? "pie" : "bar";
+  const svgEl=box.querySelector(".sc-svg");
+  if(svgEl) svgEl.outerHTML='<svg viewBox="0 0 280 150" class="sc-svg">'+gaChartSvg(data.slide.benefits, chartType).replace(/^[\s\S]*?<svg[^>]*>|<\/svg>[\s\S]*$/g,"")+"</svg>";
 }
