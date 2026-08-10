@@ -105,7 +105,7 @@ function status(kind,html){ window.dispatchEvent(new CustomEvent("kaizen:status"
 /* ---- 文件渲染 + 綁定 ---- */
 export function renderDocument(){
   const tpl = getTemplate(state.template);
-  const view = { ...data, photos: state.images };
+  const view = { ...data, photos: state.images, slidePhotoSize: state.slidePhotoSize };
   const doc = $("doc");
   doc.innerHTML = tpl.render(view, { esc:(s)=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"), buildLines });
   /* 照片位置計算 */

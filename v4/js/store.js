@@ -19,7 +19,8 @@ export const state = {
   editSide: { before:"right", after:"right" },
   compress: localStorage.getItem(STORE.compress) !== "0",
   compressMax: parseInt(localStorage.getItem(STORE.compressMax) || "1600",10) || 1600,
-  images: { before:[], after:[] }
+  images: { before:[], after:[] },
+  slidePhotoSize: {}
 };
 state.keys.gemini = localStorage.getItem(STORE.key+":gemini") || "";
 state.keys.openai = localStorage.getItem(STORE.key+":openai") || "";
