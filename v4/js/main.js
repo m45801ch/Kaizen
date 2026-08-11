@@ -89,7 +89,7 @@ function init(){
   $("resetBtn").addEventListener("click",()=>{
     if(!confirm("確定要清空所有欄位與照片嗎？")) return;
     $("f-title").value=""; $("f-before").value=""; $("f-after").value="";
-    $("f-benefit-1").value=""; $("f-benefit-2").value=""; $("f-benefit-3").value="";
+    $("f-benefit-1").innerHTML=""; $("f-benefit-2").innerHTML=""; $("f-benefit-3").innerHTML="";
     $("conv-before").value=""; $("conv-after").value="";
     state.images.before=[]; state.images.after=[];
     state.editSide.before="right"; state.editSide.after="right";

@@ -2,7 +2,7 @@
 import { state, data, saveForm, persistImages, DEFAULT_LOGO } from "./store.js";
 import { getTemplate } from "./templates/index.js";
 import { gaChartSvg } from "./templates/slide/index.js";
-import { buildLines } from "./analysis.js";
+import { buildLines, escEmphasis, unEmphasis } from "./analysis.js";
 
 const $ = id => document.getElementById(id);
 
@@ -17,9 +17,9 @@ export function syncFromDom(){
   data.title = $("f-title")?$("f-title").value:"";
   data.before = $("f-before")?$("f-before").value:"";
   data.after = $("f-after")?$("f-after").value:"";
-  data.benefits[0] = $("f-benefit-1")?$("f-benefit-1").value:"";
-  data.benefits[1] = $("f-benefit-2")?$("f-benefit-2").value:"";
-  data.benefits[2] = $("f-benefit-3")?$("f-benefit-3").value:"";
+  data.benefits[0] = $("f-benefit-1") ? unEmphasis($("f-benefit-1").innerHTML) : "";
+  data.benefits[1] = $("f-benefit-2") ? unEmphasis($("f-benefit-2").innerHTML) : "";
+  data.benefits[2] = $("f-benefit-3") ? unEmphasis($("f-benefit-3").innerHTML) : "";
   /* 模板專用欄位 */
   data.extra = data.extra || {};
   if(tpl.id==="safety"){ data.extra = data.extra||{}; if(!data.extra.safetyLevel) data.extra.safetyLevel=""; }
@@ -48,7 +48,10 @@ export function fillForm(obj, force){
     const v = obj[k]!==undefined&&obj[k]!==null?String(obj[k]):"";
     const el=$(map[k]);
     if(!v||!el) return;
-    if(force || state.override || !el.value.trim()) el.value=v;
+    if(force || state.override || !(el.value||el.textContent||"").trim()){
+      if(el.dataset && el.dataset.benefit) el.innerHTML = escEmphasis(v);
+      else el.value = v;
+    }
   });
   ["f-title","f-before","f-after","f-benefit-1","f-benefit-2","f-benefit-3"].forEach(id=>autoResize($(id)));
   if(getTemplate(state.template).id==="safety"){
