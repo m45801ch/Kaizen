@@ -43,6 +43,9 @@ export function renderAllAnalysis(){ ["before","after"].forEach(renderAnalysis);
 
 /* AI 結果填入右側 */
 export function fillForm(obj, force){
+  if(obj && Array.isArray(obj.benefits)){
+    obj = { ...obj, benefit1:obj.benefits[0], benefit2:obj.benefits[1], benefit3:obj.benefits[2] };
+  }
   const map={ title:"f-title", before:"f-before", after:"f-after", benefit1:"f-benefit-1", benefit2:"f-benefit-2", benefit3:"f-benefit-3" };
   Object.keys(map).forEach(k=>{
     const v = obj[k]!==undefined&&obj[k]!==null?String(obj[k]):"";
