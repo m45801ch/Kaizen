@@ -178,3 +178,7 @@ input[type=range]{width:100%;accent-color:var(--primary);cursor:pointer}
 .slide-page .sc-labels{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px}
 .slide-page .sc-label{font-size:12px;color:#E2E8F0;display:inline-flex;align-items:center;gap:6px}
 .slide-page .sc-label::before{content:"";width:10px;height:10px;border-radius:2px;background:var(--sc);flex-shrink:0}
+
+/* ---------- 效益欄位強調詞變色 ---------- */
+.benefit-edit{white-space:pre-wrap}
+.benefit-edit .kw{color:var(--danger);font-weight:700}

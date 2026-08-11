@@ -1,5 +1,6 @@
 /* 工安模板：警示黃×黑、危險等級色塊、工安風預期效益 */
 import { esc, docHeader, titleField, photoZone, analysisArea } from "../shared.js";
+import { escEmphasis } from "../../analysis.js";
 
 function gaBenefitBox(d){
   const items=[
@@ -17,7 +18,7 @@ function gaBenefitBox(d){
     '<div class="ga-benefit-cols">'+items.map((it,idx)=>{
       const cls=it[0], val=it[1];
       return '<div class="ga-benefit-col '+cls+'"><div class="ga-benefit-icon">'+icons[cls]+"</div>"+
-        '<textarea class="editable" id="f-benefit-'+(idx+1)+'" rows="1" placeholder="…">'+esc(val)+"</textarea>"+
+        '<div class="benefit-edit editable" id="f-benefit-'+(idx+1)+'" contenteditable="true" data-benefit="f-benefit-'+(idx+1)+'" placeholder="…">'+escEmphasis(val)+"</div>"+
       "</div>";
     }).join("")+"</div>"+
     '<div class="ga-stripe"></div>'+

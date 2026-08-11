@@ -1,4 +1,5 @@
 /* 模板共用元件（供各模板 render 使用） */
+import { escEmphasis } from "../analysis.js";
 export function esc(s){
   return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 }
@@ -57,7 +58,7 @@ export function benefitBox(d){
     '<div class="benefit-cols">'+rows.map(([id,v,ic])=>
       '<div class="benefit-col"><div class="benefit-row">'+
       '<div class="benefit-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+ic+"</svg></div>"+
-      '<textarea class="editable" id="'+id+'" rows="1" placeholder="…">'+esc(v)+"</textarea>"+
+      '<div class="benefit-edit editable" id="'+id+'" contenteditable="true" data-benefit="'+id+'" placeholder="…">'+escEmphasis(v)+"</div>"+
       "</div></div>"
     ).join("")+"</div></div>";
 }
