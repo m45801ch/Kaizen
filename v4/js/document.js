@@ -394,6 +394,35 @@ function bindDocument(){
     handle.addEventListener("pointermove", onMove);
     handle.addEventListener("pointerup", onUp);
   });
+
+  /* 簡報照片拖拽移動（Pointer Events） */
+  doc.addEventListener("pointerdown", e=>{
+    if(getTemplate(state.template).id!=="slide") return;
+    const target = e.target.closest("[data-slide-pos]");
+    if(!target) return;
+    if(e.target.closest("[data-slide-resize]")) return;
+    e.preventDefault();
+    const id = target.dataset.slidePos;
+    const zone = target.closest(".slide-photos");
+    const maxX = zone ? Math.max(0, zone.clientWidth - target.offsetWidth) : 800;
+    const maxY = zone ? Math.max(0, zone.clientHeight - target.offsetHeight) : 600;
+    const startX = e.clientX, startY = e.clientY;
+    const baseX = target.offsetLeft, baseY = target.offsetTop;
+    function onMove(ev){
+      const nx = Math.max(0, Math.min(maxX, baseX + (ev.clientX - startX)));
+      const ny = Math.max(0, Math.min(maxY, baseY + (ev.clientY - startY)));
+      target.style.left = nx+"px";
+      target.style.top = ny+"px";
+    }
+    function onUp(){
+      target.removeEventListener("pointermove", onMove);
+      target.removeEventListener("pointerup", onUp);
+      state.slidePhotoPos[id] = { x: target.offsetLeft, y: target.offsetTop };
+    }
+    target.setPointerCapture(e.pointerId);
+    target.addEventListener("pointermove", onMove);
+    target.addEventListener("pointerup", onUp);
+  });
 }
 
 function redrawSlideChart(){
