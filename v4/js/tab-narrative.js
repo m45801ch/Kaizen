@@ -20,7 +20,7 @@ export async function generateAll(){
   if(!key){ status("error","請先在「通用設定」輸入 API Key。"); return; }
   const { srcBefore, srcAfter } = sources();
   if(!srcBefore && !srcAfter){ status("error","請先於左側「正式措辭描述」欄位輸入改善前或改善後的內容。"); return; }
-  const d={ title:data.title, before:srcBefore, after:srcAfter, benefits:data.benefits };
+  const d={ title:data.title, before:srcBefore, after:srcAfter, benefits:["","",""] };
   const model=getModel();
   const btn=$("generateBtn");
   btn.disabled=true;
