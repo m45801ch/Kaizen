@@ -417,11 +417,16 @@ function bindDocument(){
     function onUp(){
       target.removeEventListener("pointermove", onMove);
       target.removeEventListener("pointerup", onUp);
+      target.removeEventListener("pointercancel", onCancel);
+      target.removeEventListener("lostpointercapture", onCancel);
       state.slidePhotoPos[id] = { x: target.offsetLeft, y: target.offsetTop };
     }
+    const onCancel = ()=>{ onUp(); };
     target.setPointerCapture(e.pointerId);
     target.addEventListener("pointermove", onMove);
     target.addEventListener("pointerup", onUp);
+    target.addEventListener("pointercancel", onCancel);
+    target.addEventListener("lostpointercapture", onCancel);
   });
 }
 

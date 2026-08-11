@@ -164,7 +164,7 @@ input[type=range]{width:100%;accent-color:var(--primary);cursor:pointer}
 .slide-page .slide-benefits{display:flex;flex-direction:column;gap:8px}
 .slide-page .sb-item{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:10px 12px;font-size:14px;line-height:1.5}
 .slide-page .slide-conclusion{font-size:15px;color:#E2E8F0;border-top:1px solid rgba(255,255,255,.18);padding-top:12px}
-.slide-page .slide-photos{position:relative;min-height:60px;margin-bottom:10px}
+.slide-page .slide-photos{position:relative;height:clamp(220px,26vh,360px);overflow:hidden;margin-bottom:10px}
 .slide-page .slide-photo{position:absolute;min-width:0;display:flex;flex-direction:column;align-items:center;gap:6px}
 .slide-page .slide-photo-frame{position:relative;overflow:hidden;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18)}
 .slide-page .slide-photo-frame img{width:100%;height:100%;object-fit:contain;display:block}
