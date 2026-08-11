@@ -27,7 +27,12 @@ export function escEmphasis(s){
   return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\*\*(.+?)\*\*/g,'<b class="kw">$1</b>');
 }
 export function unEmphasis(html){
-  return String(html).replace(/<b class="kw">([\s\S]*?)<\/b>/g,"**$1**");
+  return String(html)
+    .replace(/<br[^>]*>/gi,"\n")
+    .replace(/<\/?(?:div|p)[^>]*>/gi,"\n")
+    .replace(/<b class="kw">([\s\S]*?)<\/b>/g,"**$1**")
+    .replace(/<[^>]+>/g,"")
+    .replace(/&lt;/g,"<").replace(/&gt;/g,">").replace(/&amp;/g,"&");
 }
 function esc(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 

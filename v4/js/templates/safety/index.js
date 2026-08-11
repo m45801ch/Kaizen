@@ -18,7 +18,7 @@ function gaBenefitBox(d){
     '<div class="ga-benefit-cols">'+items.map((it,idx)=>{
       const cls=it[0], val=it[1];
       return '<div class="ga-benefit-col '+cls+'"><div class="ga-benefit-icon">'+icons[cls]+"</div>"+
-        '<div class="benefit-edit editable" id="f-benefit-'+(idx+1)+'" contenteditable="true" data-benefit="f-benefit-'+(idx+1)+'" placeholder="…">'+escEmphasis(val)+"</div>"+
+        '<div class="benefit-edit editable" id="f-benefit-'+(idx+1)+'" contenteditable="true" data-benefit="f-benefit-'+(idx+1)+'" placeholder="…">'+escEmphasis(val||"")+"</div>"+
       "</div>";
     }).join("")+"</div>"+
     '<div class="ga-stripe"></div>'+
