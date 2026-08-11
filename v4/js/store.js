@@ -20,7 +20,8 @@ export const state = {
   compress: localStorage.getItem(STORE.compress) !== "0",
   compressMax: parseInt(localStorage.getItem(STORE.compressMax) || "1600",10) || 1600,
   images: { before:[], after:[] },
-  slidePhotoSize: {}
+  slidePhotoSize: {},
+  slidePhotoPos: {}
 };
 state.keys.gemini = localStorage.getItem(STORE.key+":gemini") || "";
 state.keys.openai = localStorage.getItem(STORE.key+":openai") || "";
