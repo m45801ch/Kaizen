@@ -2,7 +2,7 @@
 export function buildPrompt(d){
   const label = {
     title:"改善主題（僅供參考）", before:"改善前現況描述（口語）", after:"改善後對策描述（口語）",
-    benefit1:"第一項預期效益", benefit2:"第二項預期效益", benefit3:"第三項預期效益"
+    benefit1:"第一項預期效益（僅供參考）", benefit2:"第二項預期效益（僅供參考）", benefit3:"第三項預期效益（僅供參考）"
   };
   const parts = [];
   [["title","title"],["before","before"],["after","after"],["benefit1","benefits"],["benefit2","benefits"],["benefit3","benefits"]].forEach(()=>{});
@@ -41,8 +41,9 @@ export function buildPrompt(d){
     "5b. 請同時判定改善前的風險等級（safetyLevel），只回傳「高」「中」「低」其中一個字；若無法判定則回傳「中」。",
     "6. 改善前（before）與改善後（after）的總字數各控制在 100 字內（含標籤與符號），這是 AI 生成時的硬性上限，請嚴格遵守。",
     "7. 判斷改善主題與內容，一律以「改善前（before）」與「改善後（after）」的描述內容為主要依據；若「改善主題」欄位與內容不符，請以內容為準，不要被舊的主題名稱誤導。",
-    "8. 若使用者已提供正式內容，請參考並優化，不要重複編造或刪除其核心重點。",
-    "9. 只回傳 JSON 物件，不要加任何額外文字、markdown 標記或註解。"
+    "8. 預期效益（benefit1/2/3）一律以「改善前（before）」與「改善後（after）」的內容為主要依據重新擬定，不要沿用與新內容無關的舊效益。",
+    "9. 若使用者已提供正式內容，請參考並優化，不要重複編造或刪除其核心重點。",
+    "10. 只回傳 JSON 物件，不要加任何額外文字、markdown 標記或註解。"
   ].join("\n");
 }
 
