@@ -1,4 +1,4 @@
-# 改善提案生成器（KAIZEN V3.5 · AI 版）說明檔
+# 改善提案生成器（KAIZEN V4 · AI 版）說明檔
 
 ## 一、網站簡介
 
@@ -8,9 +8,9 @@
 
 ## 二、使用環境
 
-- **線上直接使用**：https://m45801ch.github.io/Kaizen/ （GitHub Pages 自動部署，push 後自動更新）。
+- **線上直接使用**：https://m45801ch.github.io/Kaizen/v4/ （V4 多模板版，GitHub Pages 自動部署，push 後自動更新）。
 - 建議使用 Chrome、Edge 或 Firefox 等現代瀏覽器開啟。
-- 也可直接開啟本機 `index.html` 使用（單一自包含檔案，無需架設伺服器）。
+- 也可本機架設伺服器開啟 `v4/` 目錄使用（ES Modules 多檔，需 HTTP 伺服器，如 `python -m http.server`）。
 - 首次使用請在左側「API 設定」輸入你的 AI API Key（Google Gemini 或 OpenAI）。
 
 ## 三、左側面板功能
