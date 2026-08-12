@@ -92,6 +92,7 @@ export async function generateSlide(){
     saveForm();
     state.template="slide";
     localStorage.setItem(STORE.template,"slide");
+    if(window.__applyOrientation) window.__applyOrientation("landscape", true);
     renderDocument();
     if(window.__renderTemplateGrid) window.__renderTemplateGrid();
     status("success","簡報已生成並切換到簡報模板，可列印／匯出 PDF。");

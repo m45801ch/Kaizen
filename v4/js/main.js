@@ -40,6 +40,7 @@ function renderTemplateGrid(){
       renderTemplateGrid();
       applyTemplateClass();
       renderDocument();
+      if(t.id==="slide"&&window.__applyOrientation) window.__applyOrientation("landscape", true);
     });
     grid.appendChild(card);
   });
@@ -77,6 +78,7 @@ function init(){
     }
     if(persist) localStorage.setItem(STORE.orient, orient);
   }
+  window.__applyOrientation = applyOrientation;
   if(orientSel){
     orientSel.value = localStorage.getItem(STORE.orient) === "landscape" ? "landscape" : "portrait";
     applyOrientation(orientSel.value, false);
@@ -95,23 +97,25 @@ function init(){
         const designW=slide.clientWidth, designH=slide.clientHeight;
         const photos=[...slide.querySelectorAll("[data-slide-pos]")];
         if(designW>0&&designH>0){
-          const originals=photos.map(photo=>({ photo, style:photo.getAttribute("style") }));
-          photos.forEach(photo=>{
-            const x=photo.offsetLeft, y=photo.offsetTop;
-            photo.style.left=(x/designW*100)+"%";
-            photo.style.top=(y/designH*100)+"%";
-            photo.style.right="auto";
-          });
+          if(!landscape){
+            const originals=photos.map(photo=>({ photo, style:photo.getAttribute("style") }));
+            photos.forEach(photo=>{
+              const x=photo.offsetLeft, y=photo.offsetTop;
+              photo.style.left=(x/designW*100)+"%";
+              photo.style.top=(y/designH*100)+"%";
+              photo.style.right="auto";
+            });
+            window.addEventListener("afterprint",()=>{
+              originals.forEach(({photo,style})=>{
+                if(style===null) photo.removeAttribute("style");
+                else photo.setAttribute("style",style);
+              });
+            },{once:true});
+          }
           slide.style.setProperty("--slide-w", designW+"px");
           slide.style.setProperty("--slide-h", designH+"px");
           const scale=landscape ? Math.min(1, printW/designW) : printW/designW;
           slide.style.setProperty("--slide-ps", String(scale));
-          window.addEventListener("afterprint",()=>{
-            originals.forEach(({photo,style})=>{
-              if(style===null) photo.removeAttribute("style");
-              else photo.setAttribute("style",style);
-            });
-          },{once:true});
         }
       }
     }
