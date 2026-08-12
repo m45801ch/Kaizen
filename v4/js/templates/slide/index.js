@@ -99,7 +99,7 @@ export default {
       const pos = (d.slideBlockPos && d.slideBlockPos.benefits) || null;
       const z = (d.slideBlockZ && d.slideBlockZ.benefits) ?? 1;
       const sz = (d.slideBlockSize && d.slideBlockSize.benefits) || null;
-      const posStyle = pos ? 'left:'+pos.x+'px;top:'+pos.y+'px' : 'left:auto;right:36px;top:104px';
+      const posStyle = pos ? 'left:'+pos.x+'px;top:'+pos.y+'px' : 'left:36px;right:auto;top:104px';
       const sizeStyle = sz ? 'width:'+sz.w+'px;height:'+sz.h+'px' : '';
       return 'data-slide-block="benefits" style="'+posStyle+';z-index:'+z+';'+sizeStyle+'"';
     };
