@@ -407,6 +407,11 @@ function bindDocument(){
     e.preventDefault();
     const id = target.dataset.slidePos;
     const page = target.closest(".slide-page");
+    if(target.style.right && target.style.right!=="auto"){
+      const curLeft = target.offsetLeft;
+      target.style.right="auto";
+      target.style.left = curLeft+"px";
+    }
     const maxX = page ? Math.max(0, page.clientWidth - target.offsetWidth) : 800;
     const maxY = page ? Math.max(0, page.clientHeight - target.offsetHeight) : 600;
     const startX = e.clientX, startY = e.clientY;
@@ -443,8 +448,8 @@ function bindDocument(){
     if(!photo) return;
     const id = photo.dataset.slidePos;
     const delta = parseInt(btn.dataset.slideZ, 10) || 0;
-    const cur = state.slideZ[id] || 5;
-    const next = Math.max(-10, Math.min(99, cur + delta));
+    const cur = state.slideZ[id] ?? 5;
+    const next = Math.max(0, Math.min(99, cur + delta));
     state.slideZ[id] = next;
     photo.style.zIndex = String(next);
   });

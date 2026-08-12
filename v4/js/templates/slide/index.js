@@ -76,7 +76,7 @@ export default {
       const ratio = (p.w && p.h) ? p.h/p.w : 1;
       const sz = (d.slidePhotoSize && d.slidePhotoSize[p.id]) || null;
       const pos = (d.slidePhotoPos && d.slidePhotoPos[p.id]) || null;
-      const z = (d.slideZ && d.slideZ[p.id]) || 5;
+      const z = (d.slideZ && d.slideZ[p.id]) ?? 5;
       const w = sz ? sz.w : 240;
       const h = sz ? sz.h : Math.max(40, Math.round(240*ratio));
       const style = (pos ? 'left:'+pos.x+'px;top:'+pos.y+'px' : (side==="after" ? 'left:auto;right:8px;top:8px' : 'left:8px;top:8px'))+';z-index:'+z;
