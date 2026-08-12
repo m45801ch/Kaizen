@@ -79,40 +79,9 @@ export async function analyzePhotos(){
   }
 }
 
-export async function generateSlide(){
-  const key=getKey();
-  if(!key){ status("error","請先在「通用設定」輸入 API Key。"); return; }
-  syncFromDom();
-  const { srcBefore, srcAfter } = sources();
-  const d={ title:data.title, before:srcBefore||data.before, after:srcAfter||data.after, benefits:data.benefits };
-  const model=getModel();
-  const btn=$("slideBtn");
-  btn.disabled=true;
-  btn.innerHTML='<span class="spinner"></span> 生成中…';
-  status("loading","正在生成一頁簡報…");
-  try{
-    const obj=await callForProvider(state.provider,key,model,buildSlidePrompt(d));
-    data.slide={ slideTitle:obj.slideTitle||d.title||"改善提案", keyPoints:Array.isArray(obj.keyPoints)?obj.keyPoints:[], benefits:Array.isArray(obj.benefits)?obj.benefits:[], conclusion:obj.conclusion||"" };
-    saveForm();
-    state.template="slide";
-    localStorage.setItem(STORE.template,"slide");
-    if(window.__applyOrientation) window.__applyOrientation("landscape", true);
-    renderDocument();
-    if(window.__renderTemplateGrid) window.__renderTemplateGrid();
-    status("success","簡報已生成並切換到簡報模板，可列印／匯出 PDF。");
-    setTimeout(()=>window.dispatchEvent(new CustomEvent("kaizen:status-hide")),5000);
-  }catch(err){
-    status("error","簡報生成失敗："+err.message);
-  }finally{
-    btn.disabled=false;
-    btn.textContent="生成一頁簡報";
-  }
-}
-
 export function initNarrative(){
   $("generateBtn").addEventListener("click",generateAll);
   $("visionBtn").addEventListener("click",analyzePhotos);
-  $("slideBtn").addEventListener("click",generateSlide);
 
   const FORM=["f-title","f-before","f-after","f-benefit-1","f-benefit-2","f-benefit-3"];
   FORM.forEach(id=>{
