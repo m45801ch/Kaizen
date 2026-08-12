@@ -88,7 +88,7 @@ function init(){
     if(slide){
       const landscape=document.body.classList.contains("orient-landscape");
       const printW = landscape
-        ? Math.round(Math.round(269*96/25.4))
+        ? Math.round(Math.round(267*96/25.4))
         : Math.round(Math.round(180*96/25.4));
       const rect=slide.getBoundingClientRect();
       if(rect.width>0){
@@ -104,7 +104,8 @@ function init(){
           });
           slide.style.setProperty("--slide-w", designW+"px");
           slide.style.setProperty("--slide-h", designH+"px");
-          slide.style.setProperty("--slide-ps", String(printW/designW));
+          const scale=landscape ? Math.min(1, printW/designW) : printW/designW;
+          slide.style.setProperty("--slide-ps", String(scale));
           window.addEventListener("afterprint",()=>{
             originals.forEach(({photo,style})=>{
               if(style===null) photo.removeAttribute("style");
