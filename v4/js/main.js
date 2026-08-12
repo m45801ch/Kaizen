@@ -92,6 +92,9 @@ function init(){
       const printW = landscape
         ? Math.round(Math.round(267*96/25.4))
         : Math.round(Math.round(180*96/25.4));
+      const printH = landscape
+        ? Math.round(Math.round(174*96/25.4))
+        : Math.round(Math.round(261*96/25.4));
       const rect=slide.getBoundingClientRect();
       if(rect.width>0){
         const designW=slide.clientWidth, designH=slide.clientHeight;
@@ -114,7 +117,7 @@ function init(){
           }
           slide.style.setProperty("--slide-w", designW+"px");
           slide.style.setProperty("--slide-h", designH+"px");
-          const scale=landscape ? Math.min(1, printW/designW) : printW/designW;
+          const scale=Math.min(1, printW/designW, printH/designH);
           slide.style.setProperty("--slide-ps", String(scale));
         }
       }
