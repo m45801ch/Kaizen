@@ -411,6 +411,7 @@ function bindDocument(){
     if(!target) return;
     if(e.target.closest("[data-slide-resize]")) return;
     if(e.target.closest("[data-slide-z]")) return;
+    if(e.target.closest("[data-slide-reset-size]")) return;
     e.preventDefault();
     const id = target.dataset.slidePos;
     const page = target.closest(".slide-page");
@@ -461,6 +462,30 @@ function bindDocument(){
     const next = Math.max(0, Math.min(99, cur + delta));
     state.slideZ[id] = next;
     photo.style.zIndex = String(next);
+  });
+
+  /* 簡報照片恢復原尺寸 */
+  doc.addEventListener("click", e=>{
+    if(getTemplate(state.template).id!=="slide") return;
+    const btn = e.target.closest("[data-slide-reset-size]");
+    if(!btn) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const photo = btn.closest("[data-slide-pos]");
+    if(!photo) return;
+    const id = photo.dataset.slidePos;
+    const frame = photo.querySelector(".slide-photo-frame");
+    if(!frame) return;
+    let p = null;
+    ["before","after"].forEach(side=>{
+      const found = state.images[side].find(x=>x.id===id);
+      if(found) p = found;
+    });
+    const w = 240;
+    const h = p && p.w && p.h ? Math.max(40, Math.round(240*(p.h/p.w))) : 40;
+    frame.style.width = w+"px";
+    frame.style.height = h+"px";
+    state.slidePhotoSize[id] = { w, h };
   });
 
   /* 簡報文字/表格區塊拖拽移動（Pointer Events） */
