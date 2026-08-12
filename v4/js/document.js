@@ -370,6 +370,7 @@ function bindDocument(){
     if(getTemplate(state.template).id!=="slide") return;
     const handle = e.target.closest("[data-slide-resize]");
     if(!handle) return;
+    if(e.button!==0) return;
     e.preventDefault();
     const id = handle.dataset.slideResize;
     const frame = handle.closest(".slide-photo-frame");
@@ -443,7 +444,7 @@ function bindDocument(){
     const id = photo.dataset.slidePos;
     const delta = parseInt(btn.dataset.slideZ, 10) || 0;
     const cur = state.slideZ[id] || 5;
-    const next = Math.max(1, Math.min(99, cur + delta));
+    const next = Math.max(-10, Math.min(99, cur + delta));
     state.slideZ[id] = next;
     photo.style.zIndex = String(next);
   });

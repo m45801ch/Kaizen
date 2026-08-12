@@ -79,7 +79,7 @@ export default {
       const z = (d.slideZ && d.slideZ[p.id]) || 5;
       const w = sz ? sz.w : 240;
       const h = sz ? sz.h : Math.max(40, Math.round(240*ratio));
-      const style = (pos ? 'left:'+pos.x+'px;top:'+pos.y+'px' : (side==="after" ? 'left:auto;right:0;top:0' : 'left:0;top:0'))+';z-index:'+z;
+      const style = (pos ? 'left:'+pos.x+'px;top:'+pos.y+'px' : (side==="after" ? 'left:auto;right:8px;top:8px' : 'left:8px;top:8px'))+';z-index:'+z;
       return '<div class="slide-photo" data-slide-pos="'+esc(p.id)+'" style="'+style+'"><span class="slide-photo-tag">'+label+'</span>'+
         '<div class="slide-photo-frame" data-slide-photo="'+esc(p.id)+'" style="width:'+w+'px;height:'+h+'px">'+
         '<img src="'+esc(p.previewDataUrl||p.dataUrl)+'" alt="'+label+'">'+
