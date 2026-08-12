@@ -94,15 +94,31 @@ export default {
     const photoBlock = (photosBefore.length||photosAfter.length)
       ? slidePhoto(photosBefore[0], "改善前", "before")+slidePhoto(photosAfter[0], "改善後", "after")
       : "";
+    const blockStyle = (key)=>{
+      const pos = (d.slideBlockPos && d.slideBlockPos[key]) || null;
+      const z = (d.slideBlockZ && d.slideBlockZ[key]) ?? 1;
+      const def = {
+        title:'left:36px;top:28px',
+        points:'left:36px;top:104px',
+        benefits:'left:auto;right:36px;top:104px',
+        conclusion:'left:36px;bottom:28px'
+      }[key] || '';
+      const posStyle = pos ? 'left:'+pos.x+'px;top:'+pos.y+'px' : def;
+      return 'data-slide-block="'+key+'" style="'+posStyle+';z-index:'+z+'"';
+    };
+    const zbtns = (key)=>'<span class="slide-z-btns">'+
+      '<button type="button" data-slide-block-z="+1" title="上移一層">↑</button>'+
+      '<button type="button" data-slide-block-z="-1" title="下移一層">↓</button>'+
+    "</span>";
     return '<div class="slide-page">'+
       '<div class="slide-tag">改善提案簡報</div>'+
-      '<div class="slide-title" contenteditable="true" data-slide-field="slideTitle">'+esc(s.slideTitle||d.title||"改善提案")+'</div>'+
+      '<div class="slide-title" contenteditable="true" data-slide-field="slideTitle" '+blockStyle("title")+'>'+esc(s.slideTitle||d.title||"改善提案")+zbtns("title")+"</div>"+
       '<div class="slide-body">'+
-        '<ul class="slide-points">'+(points.length?points.map((k,i)=>"<li contenteditable=\"true\" data-slide-field=\"keyPoints-"+i+"\">"+esc(k)+"</li>").join(""):'<li>尚無重點</li>')+"</ul>"+
-        (benefits.length?'<div class="slide-benefits">'+gaChartBlock(benefits, chartType)+"</div>":"")+
+        '<ul class="slide-points" '+blockStyle("points")+'>'+(points.length?points.map((k,i)=>"<li contenteditable=\"true\" data-slide-field=\"keyPoints-"+i+"\">"+esc(k)+"</li>").join(""):'<li>尚無重點</li>')+zbtns("points")+"</ul>"+
+        (benefits.length?'<div class="slide-benefits" '+blockStyle("benefits")+'>'+gaChartBlock(benefits, chartType)+zbtns("benefits")+"</div>":"")+
       "</div>"+
       photoBlock+
-      '<div class="slide-conclusion" contenteditable="true" data-slide-field="conclusion">'+esc(s.conclusion||"")+"</div>"+
+      '<div class="slide-conclusion" contenteditable="true" data-slide-field="conclusion" '+blockStyle("conclusion")+'>'+esc(s.conclusion||"")+zbtns("conclusion")+"</div>"+
     "</div>";
   }
 };

@@ -22,7 +22,9 @@ export const state = {
   images: { before:[], after:[] },
   slidePhotoSize: {},
   slidePhotoPos: {},
-  slideZ: {}
+  slideZ: {},
+  slideBlockPos: {},
+  slideBlockZ: {}
 };
 state.keys.gemini = localStorage.getItem(STORE.key+":gemini") || "";
 state.keys.openai = localStorage.getItem(STORE.key+":openai") || "";
