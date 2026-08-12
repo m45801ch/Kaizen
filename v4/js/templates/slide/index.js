@@ -1,11 +1,23 @@
 /* 一頁式簡報模板（AI 簡報生成結果渲染） */
 import { esc } from "../shared.js";
 
+function gaGreen(v){
+  if(v>=80) return "#14532D";
+  if(v>=60) return "#166534";
+  if(v>=40) return "#22C55E";
+  if(v>=20) return "#4ADE80";
+  return "#86EFAC";
+}
+function gaVal(b, len){
+  const m = /(\d+(?:\.\d+)?)\s*%/.exec(String(b));
+  return m ? Math.max(0, Math.min(100, parseFloat(m[1]))) : Math.round(100/(len||1));
+}
 function gaChartBlock(benefits, chartType){
   const svg = chartType==="pie" ? gaPieSvg(benefits) : gaBarSvg(benefits);
   const labels = benefits.map((b,i)=>{
-    const colors = chartType==="pie" ? ["#F2B705","#E8590C","#D63426","#3B82F6","#22C55E","#A855F7"] : ["#F2B705","#E8590C","#D63426"];
-    return '<div class="sc-label" contenteditable="true" data-slide-field="benefits-'+i+'" style="--sc:'+colors[i%colors.length]+'">'+esc(b)+"</div>";
+    const colors = chartType==="pie" ? ["#F2B705","#E8590C","#D63426","#3B82F6","#22C55E","#A855F7"] : null;
+    const c = colors ? colors[i%colors.length] : gaGreen(gaVal(b, benefits.length));
+    return '<div class="sc-label" contenteditable="true" data-slide-field="benefits-'+i+'" style="--sc:'+c+'">'+esc(b)+"</div>";
   }).join("");
   return '<div class="slide-chart">'+
     '<div class="sc-cap">效益達成度</div>'+
@@ -17,11 +29,7 @@ function gaChartBlock(benefits, chartType){
 }
 
 function gaBarSvg(benefits){
-  const colors=["#F2B705","#E8590C","#D63426"];
-  const vals = benefits.map(b=>{
-    const m = /(\d+(?:\.\d+)?)\s*%/.exec(String(b));
-    return m ? Math.max(0, Math.min(100, parseFloat(m[1]))) : Math.round(100/benefits.length);
-  });
+  const vals = benefits.map(b=>gaVal(b, benefits.length));
   const barW = Math.min(40, Math.max(10, 260/benefits.length));
   const slot = 260/benefits.length;
   return benefits.map((b,i)=>{
@@ -29,7 +37,7 @@ function gaBarSvg(benefits){
     const y = 130 - h;
     const cx = 10 + slot*(i+0.5);
     const bx = cx - barW/2;
-    return '<g><rect x="'+bx+'" y="'+y+'" width="'+barW+'" height="'+h+'" fill="'+colors[i%3]+'" rx="2"></rect>'+
+    return '<g><rect x="'+bx+'" y="'+y+'" width="'+barW+'" height="'+h+'" fill="'+gaGreen(vals[i])+'" rx="2"></rect>'+
       '<text x="'+cx+'" y="142" text-anchor="middle" fill="#E2E8F0" font-size="11">'+esc(vals[i])+'%</text></g>';
   }).join("");
 }
