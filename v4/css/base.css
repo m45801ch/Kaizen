@@ -174,6 +174,11 @@ input[type=range]{width:100%;accent-color:var(--primary);cursor:pointer}
 .slide-page .slide-photo-frame img{width:100%;height:100%;object-fit:contain;display:block}
 .slide-page .slide-photo-frame .resize-handle{position:absolute;right:0;bottom:0;width:14px;height:14px;cursor:nwse-resize;background:rgba(255,255,255,.5);border-top-left-radius:8px}
 .slide-page .slide-photo-tag{font-size:11px;letter-spacing:.14em;color:#93C5FD;font-weight:600}
+.slide-page{min-height:70vh}
+.slide-page .slide-body{position:relative}
+.slide-page .slide-title,.slide-page .slide-points,.slide-page .slide-benefits,.slide-page .slide-conclusion{position:absolute;cursor:grab;touch-action:none}
+.slide-page .slide-title:active,.slide-page .slide-points:active,.slide-page .slide-benefits:active,.slide-page .slide-conclusion:active{cursor:grabbing}
+.slide-page .slide-points li{cursor:grab}
 
 @media print{
   .slide-page .slide-z-btns{display:none!important}
