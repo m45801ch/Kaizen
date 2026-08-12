@@ -90,11 +90,11 @@ function init(){
     if(slide){
       const landscape=document.body.classList.contains("orient-landscape");
       const printW = landscape
-        ? Math.round(Math.round(267*96/25.4))
-        : Math.round(Math.round(180*96/25.4));
+        ? Math.round(297*96/25.4)
+        : Math.round(210*96/25.4);
       const printH = landscape
-        ? Math.round(Math.round(174*96/25.4))
-        : Math.round(Math.round(261*96/25.4));
+        ? Math.round(210*96/25.4)
+        : Math.round(297*96/25.4);
       const rect=slide.getBoundingClientRect();
       if(rect.width>0){
         const designW=slide.clientWidth, designH=slide.clientHeight;
