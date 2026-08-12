@@ -91,9 +91,10 @@ function init(){
         ? Math.round(Math.round(269*96/25.4))
         : Math.round(Math.round(180*96/25.4));
       const zoneW=slide.getBoundingClientRect().width;
-      let s = zoneW>0 ? printW/zoneW : 1;
-      s = Math.min(1, Math.max(0.3, s));
-      slide.style.setProperty("--slide-ps", String(s));
+      if(zoneW>0){
+        slide.style.setProperty("--slide-w", zoneW+"px");
+        slide.style.setProperty("--slide-ps", String(printW/zoneW));
+      }
     }
     window.print();
   });
