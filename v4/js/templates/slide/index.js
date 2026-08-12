@@ -112,13 +112,13 @@ export default {
     "</span>";
     return '<div class="slide-page">'+
       '<div class="slide-tag">改善提案簡報</div>'+
-      '<div class="slide-title" contenteditable="true" data-slide-field="slideTitle" '+blockStyle("title")+'>'+esc(s.slideTitle||d.title||"改善提案")+zbtns("title")+"</div>"+
+      '<div class="slide-title" '+blockStyle("title")+'><span class="slide-field" contenteditable="true" data-slide-field="slideTitle">'+esc(s.slideTitle||d.title||"改善提案")+"</span>"+zbtns("title")+"</div>"+
       '<div class="slide-body">'+
         '<ul class="slide-points" '+blockStyle("points")+'>'+(points.length?points.map((k,i)=>"<li contenteditable=\"true\" data-slide-field=\"keyPoints-"+i+"\">"+esc(k)+"</li>").join(""):'<li>尚無重點</li>')+zbtns("points")+"</ul>"+
         (benefits.length?'<div class="slide-benefits" '+blockStyle("benefits")+'>'+gaChartBlock(benefits, chartType)+zbtns("benefits")+"</div>":"")+
       "</div>"+
       photoBlock+
-      '<div class="slide-conclusion" contenteditable="true" data-slide-field="conclusion" '+blockStyle("conclusion")+'>'+esc(s.conclusion||"")+zbtns("conclusion")+"</div>"+
+      '<div class="slide-conclusion" '+blockStyle("conclusion")+'><span class="slide-field" contenteditable="true" data-slide-field="conclusion">'+esc(s.conclusion||"")+"</span>"+zbtns("conclusion")+"</div>"+
     "</div>";
   }
 };
