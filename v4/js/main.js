@@ -92,9 +92,26 @@ function init(){
         : Math.round(Math.round(180*96/25.4));
       const rect=slide.getBoundingClientRect();
       if(rect.width>0){
-        slide.style.setProperty("--slide-w", rect.width+"px");
-        slide.style.setProperty("--slide-h", rect.height+"px");
-        slide.style.setProperty("--slide-ps", String(printW/rect.width));
+        const designW=slide.clientWidth, designH=slide.clientHeight;
+        const photos=[...slide.querySelectorAll("[data-slide-pos]")];
+        if(designW>0&&designH>0){
+          const originals=photos.map(photo=>({ photo, style:photo.getAttribute("style") }));
+          photos.forEach(photo=>{
+            const x=photo.offsetLeft, y=photo.offsetTop;
+            photo.style.left=(x/designW*100)+"%";
+            photo.style.top=(y/designH*100)+"%";
+            photo.style.right="auto";
+          });
+          slide.style.setProperty("--slide-w", designW+"px");
+          slide.style.setProperty("--slide-h", designH+"px");
+          slide.style.setProperty("--slide-ps", String(printW/designW));
+          window.addEventListener("afterprint",()=>{
+            originals.forEach(({photo,style})=>{
+              if(style===null) photo.removeAttribute("style");
+              else photo.setAttribute("style",style);
+            });
+          },{once:true});
+        }
       }
     }
     window.print();
