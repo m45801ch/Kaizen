@@ -469,8 +469,7 @@ function bindDocument(){
     if(e.button!==0) return;
     const target = e.target.closest("[data-slide-block]");
     if(!target) return;
-    if(e.target.closest("[data-slide-z]")||e.target.closest("[data-slide-block-z]")||e.target.closest("[data-slide-resize]")) return;
-    if(e.target.closest("[data-slide-field]")) return;
+    if(e.target.closest("[data-slide-z]")||e.target.closest("[data-slide-block-z]")||e.target.closest("[data-slide-resize]")||e.target.closest("[data-slide-resize-block]")||e.target.closest("[data-slide-field]")) return;
     e.preventDefault();
     const key = target.dataset.slideBlock;
     const page = target.closest(".slide-page");
@@ -521,6 +520,43 @@ function bindDocument(){
     const next = Math.max(1, Math.min(99, cur + delta));
     state.slideBlockZ[key] = next;
     block.style.zIndex = String(next);
+  });
+
+  /* 簡報效益圖表縮放（Pointer Events） */
+  doc.addEventListener("pointerdown", e=>{
+    if(getTemplate(state.template).id!=="slide") return;
+    const handle = e.target.closest("[data-slide-resize-block]");
+    if(!handle) return;
+    if(e.button!==0) return;
+    e.preventDefault();
+    const block = handle.closest(".slide-benefits");
+    if(!block) return;
+    const pointerId = e.pointerId;
+    const page = block.closest(".slide-page");
+    const maxW = page ? Math.max(80, page.clientWidth - block.offsetLeft - 24) : 800;
+    const maxH = page ? Math.max(80, page.clientHeight - block.offsetTop - 24) : 600;
+    const startX = e.clientX, startY = e.clientY;
+    const startW = block.offsetWidth, startH = block.offsetHeight;
+    function onMove(ev){
+      const w = Math.min(maxW, Math.max(80, startW + (ev.clientX - startX)));
+      const h = Math.min(maxH, Math.max(80, startH + (ev.clientY - startY)));
+      block.style.width = w+"px";
+      block.style.height = h+"px";
+    }
+    function onUp(){
+      handle.removeEventListener("pointermove", onMove);
+      handle.removeEventListener("pointerup", onUp);
+      handle.removeEventListener("pointercancel", onCancel);
+      handle.removeEventListener("lostpointercapture", onCancel);
+      if(handle.hasPointerCapture && handle.hasPointerCapture(pointerId)) handle.releasePointerCapture(pointerId);
+      state.slideBlockSize.benefits = { w: block.offsetWidth, h: block.offsetHeight };
+    }
+    const onCancel = ()=>{ onUp(); };
+    handle.setPointerCapture(pointerId);
+    handle.addEventListener("pointermove", onMove);
+    handle.addEventListener("pointerup", onUp);
+    handle.addEventListener("pointercancel", onCancel);
+    handle.addEventListener("lostpointercapture", onCancel);
   });
 }
 
