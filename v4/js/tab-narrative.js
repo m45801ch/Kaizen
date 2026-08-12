@@ -29,15 +29,19 @@ export async function generateAll(){
   try{
     const results=await Promise.all([
       callForProvider(state.provider,key,model,buildPrompt(d)),
-      callForProvider(state.provider,key,model,buildColloquialPrompt(srcBefore,srcAfter))
+      callForProvider(state.provider,key,model,buildColloquialPrompt(srcBefore,srcAfter)),
+      callForProvider(state.provider,key,model,buildSlidePrompt(d))
     ]);
     fillForm(results[0], true);
     if(results[1].before_conv!==undefined) $("conv-before").value=String(results[1].before_conv);
     if(results[1].after_conv!==undefined) $("conv-after").value=String(results[1].after_conv);
     CONV_IDS.forEach(id=>autoResize($(id)));
+    const slideObj=results[2];
+    data.slide={ slideTitle:slideObj.slideTitle||d.title||"改善提案", keyPoints:Array.isArray(slideObj.keyPoints)?slideObj.keyPoints:[], benefits:Array.isArray(slideObj.benefits)?slideObj.benefits:[], conclusion:slideObj.conclusion||"" };
+    saveForm();
     renderDocument();
     renderAllAnalysis();
-    status("success","已同步完成自動填表與正式措辭。");
+    status("success","已同步完成正式表格、正式措辭與一頁簡報。");
     setTimeout(()=>window.dispatchEvent(new CustomEvent("kaizen:status-hide")),5000);
   }catch(err){
     status("error","生成失敗：<br>"+err.message);
