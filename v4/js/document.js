@@ -462,6 +462,66 @@ function bindDocument(){
     state.slideZ[id] = next;
     photo.style.zIndex = String(next);
   });
+
+  /* 簡報文字/表格區塊拖拽移動（Pointer Events） */
+  doc.addEventListener("pointerdown", e=>{
+    if(getTemplate(state.template).id!=="slide") return;
+    if(e.button!==0) return;
+    const target = e.target.closest("[data-slide-block]");
+    if(!target) return;
+    if(e.target.closest("[data-slide-z]")||e.target.closest("[data-slide-block-z]")||e.target.closest("[data-slide-resize]")) return;
+    if(e.target.closest("[data-slide-field]")) return;
+    e.preventDefault();
+    const key = target.dataset.slideBlock;
+    const page = target.closest(".slide-page");
+    if(target.style.right && target.style.right!=="auto"){
+      const curLeft = target.offsetLeft;
+      target.style.right="auto";
+      target.style.left = curLeft+"px";
+    }
+    const pointerId = e.pointerId;
+    const maxX = page ? Math.max(0, page.clientWidth - target.offsetWidth) : 800;
+    const maxY = page ? Math.max(0, page.clientHeight - target.offsetHeight) : 600;
+    const startX = e.clientX, startY = e.clientY;
+    const baseX = target.offsetLeft, baseY = target.offsetTop;
+    function onMove(ev){
+      const nx = Math.max(0, Math.min(maxX, baseX + (ev.clientX - startX)));
+      const ny = Math.max(0, Math.min(maxY, baseY + (ev.clientY - startY)));
+      target.style.left = nx+"px";
+      target.style.top = ny+"px";
+    }
+    function onUp(){
+      target.removeEventListener("pointermove", onMove);
+      target.removeEventListener("pointerup", onUp);
+      target.removeEventListener("pointercancel", onCancel);
+      target.removeEventListener("lostpointercapture", onCancel);
+      if(target.hasPointerCapture && target.hasPointerCapture(pointerId)) target.releasePointerCapture(pointerId);
+      state.slideBlockPos[key] = { x: target.offsetLeft, y: target.offsetTop };
+    }
+    const onCancel = ()=>{ onUp(); };
+    target.setPointerCapture(pointerId);
+    target.addEventListener("pointermove", onMove);
+    target.addEventListener("pointerup", onUp);
+    target.addEventListener("pointercancel", onCancel);
+    target.addEventListener("lostpointercapture", onCancel);
+  });
+
+  /* 簡報文字/表格區塊調層（上移/下移一層） */
+  doc.addEventListener("click", e=>{
+    if(getTemplate(state.template).id!=="slide") return;
+    const btn = e.target.closest("[data-slide-block-z]");
+    if(!btn) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const block = btn.closest("[data-slide-block]");
+    if(!block) return;
+    const key = block.dataset.slideBlock;
+    const delta = parseInt(btn.dataset.slideBlockZ, 10) || 0;
+    const cur = state.slideBlockZ[key] ?? 1;
+    const next = Math.max(1, Math.min(99, cur + delta));
+    state.slideBlockZ[key] = next;
+    block.style.zIndex = String(next);
+  });
 }
 
 function redrawSlideChart(){
