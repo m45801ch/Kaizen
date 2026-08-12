@@ -94,18 +94,6 @@ export default {
     const photoBlock = (photosBefore.length||photosAfter.length)
       ? slidePhoto(photosBefore[0], "改善前", "before")+slidePhoto(photosAfter[0], "改善後", "after")
       : "";
-    const blockStyle = (key)=>{
-      const pos = (d.slideBlockPos && d.slideBlockPos[key]) || null;
-      const z = (d.slideBlockZ && d.slideBlockZ[key]) ?? 1;
-      const def = {
-        title:'left:36px;top:60px',
-        points:'left:36px;top:104px',
-        benefits:'left:auto;right:36px;top:104px',
-        conclusion:'left:36px;bottom:28px'
-      }[key] || '';
-      const posStyle = pos ? 'left:'+pos.x+'px;top:'+pos.y+'px' : def;
-      return 'data-slide-block="'+key+'" style="'+posStyle+';z-index:'+z+'"';
-    };
     const benefitsStyle = ()=>{
       const pos = (d.slideBlockPos && d.slideBlockPos.benefits) || null;
       const z = (d.slideBlockZ && d.slideBlockZ.benefits) ?? 1;

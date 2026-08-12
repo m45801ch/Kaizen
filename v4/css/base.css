@@ -180,6 +180,7 @@ input[type=range]{width:100%;accent-color:var(--primary);cursor:pointer}
 
 @media print{
   .slide-page .slide-z-btns{display:none!important}
+  .slide-page .resize-handle{display:none!important}
 }
 .slide-page .slide-chart{border:1px solid rgba(255,255,255,.18);border-radius:10px;background:rgba(255,255,255,.06);padding:10px 12px}
 .slide-page .sc-cap{font-size:11px;letter-spacing:.16em;color:#93C5FD;font-weight:600;margin-bottom:4px}
