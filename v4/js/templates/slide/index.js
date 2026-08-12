@@ -22,12 +22,15 @@ function gaBarSvg(benefits){
     const m = /(\d+(?:\.\d+)?)\s*%/.exec(String(b));
     return m ? Math.max(0, Math.min(100, parseFloat(m[1]))) : Math.round(100/benefits.length);
   });
-  const barW = Math.min(34, Math.max(10, 260/benefits.length));
+  const barW = Math.min(40, Math.max(10, 260/benefits.length));
+  const slot = 260/benefits.length;
   return benefits.map((b,i)=>{
     const h = Math.max(4, Math.round(vals[i]/100*120));
     const y = 130 - h;
-    return '<g><rect x="'+(i*barW+8)+'" y="'+y+'" width="'+(barW-6)+'" height="'+h+'" fill="'+colors[i%3]+'" rx="2"></rect>'+
-      '<text x="'+(i*barW+barW/2+2)+'" y="142" text-anchor="middle" fill="#E2E8F0" font-size="11">'+esc(vals[i])+'%</text></g>';
+    const cx = 10 + slot*(i+0.5);
+    const bx = cx - barW/2;
+    return '<g><rect x="'+bx+'" y="'+y+'" width="'+barW+'" height="'+h+'" fill="'+colors[i%3]+'" rx="2"></rect>'+
+      '<text x="'+cx+'" y="142" text-anchor="middle" fill="#E2E8F0" font-size="11">'+esc(vals[i])+'%</text></g>';
   }).join("");
 }
 
