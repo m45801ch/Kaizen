@@ -24,7 +24,8 @@ export const state = {
   slidePhotoPos: {},
   slideZ: {},
   slideBlockPos: {},
-  slideBlockZ: {}
+  slideBlockZ: {},
+  slideBlockSize: {}
 };
 state.keys.gemini = localStorage.getItem(STORE.key+":gemini") || "";
 state.keys.openai = localStorage.getItem(STORE.key+":openai") || "";

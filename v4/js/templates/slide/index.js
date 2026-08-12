@@ -106,17 +106,26 @@ export default {
       const posStyle = pos ? 'left:'+pos.x+'px;top:'+pos.y+'px' : def;
       return 'data-slide-block="'+key+'" style="'+posStyle+';z-index:'+z+'"';
     };
+    const benefitsStyle = ()=>{
+      const pos = (d.slideBlockPos && d.slideBlockPos.benefits) || null;
+      const z = (d.slideBlockZ && d.slideBlockZ.benefits) ?? 1;
+      const sz = (d.slideBlockSize && d.slideBlockSize.benefits) || null;
+      const posStyle = pos ? 'left:'+pos.x+'px;top:'+pos.y+'px' : 'left:auto;right:36px;top:104px';
+      const sizeStyle = sz ? 'width:'+sz.w+'px;height:'+sz.h+'px' : '';
+      return 'data-slide-block="benefits" style="'+posStyle+';z-index:'+z+';'+sizeStyle+'"';
+    };
     const zbtns = (key)=>'<span class="slide-z-btns">'+
       '<button type="button" data-slide-block-z="+1" title="上移一層">↑</button>'+
       '<button type="button" data-slide-block-z="-1" title="下移一層">↓</button>'+
     "</span>";
     return '<div class="slide-page">'+
       '<div class="slide-tag">改善提案簡報</div>'+
-      '<div class="slide-title" '+blockStyle("title")+'><span class="slide-field" contenteditable="true" data-slide-field="slideTitle">'+esc(s.slideTitle||d.title||"改善提案")+"</span>"+zbtns("title")+"</div>"+
-      '<ul class="slide-points" '+blockStyle("points")+'>'+(points.length?points.map((k,i)=>"<li contenteditable=\"true\" data-slide-field=\"keyPoints-"+i+"\">"+esc(k)+"</li>").join(""):'<li>尚無重點</li>')+zbtns("points")+"</ul>"+
-      (benefits.length?'<div class="slide-benefits" '+blockStyle("benefits")+'>'+gaChartBlock(benefits, chartType)+zbtns("benefits")+"</div>":"")+
+      '<div class="slide-title"><span class="slide-field" contenteditable="true" data-slide-field="slideTitle">'+esc(s.slideTitle||d.title||"改善提案")+"</span></div>"+
+      '<ul class="slide-points">'+(points.length?points.map((k,i)=>"<li contenteditable=\"true\" data-slide-field=\"keyPoints-"+i+"\">"+esc(k)+"</li>").join(""):'<li>尚無重點</li>')+"</ul>"+
+      (benefits.length?'<div class="slide-benefits" '+benefitsStyle()+'>'+gaChartBlock(benefits, chartType)+
+        '<span class="resize-handle" data-slide-resize-block title="調整尺寸"></span>'+zbtns("benefits")+"</div>":"")+
       photoBlock+
-      '<div class="slide-conclusion" '+blockStyle("conclusion")+'><span class="slide-field" contenteditable="true" data-slide-field="conclusion">'+esc(s.conclusion||"")+"</span>"+zbtns("conclusion")+"</div>"+
+      '<div class="slide-conclusion"><span class="slide-field" contenteditable="true" data-slide-field="conclusion">'+esc(s.conclusion||"")+"</span></div>"+
     "</div>";
   }
 };
