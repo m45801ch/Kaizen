@@ -98,7 +98,7 @@ export default {
       const pos = (d.slideBlockPos && d.slideBlockPos[key]) || null;
       const z = (d.slideBlockZ && d.slideBlockZ[key]) ?? 1;
       const def = {
-        title:'left:36px;top:28px',
+        title:'left:36px;top:60px',
         points:'left:36px;top:104px',
         benefits:'left:auto;right:36px;top:104px',
         conclusion:'left:36px;bottom:28px'
@@ -113,10 +113,8 @@ export default {
     return '<div class="slide-page">'+
       '<div class="slide-tag">改善提案簡報</div>'+
       '<div class="slide-title" '+blockStyle("title")+'><span class="slide-field" contenteditable="true" data-slide-field="slideTitle">'+esc(s.slideTitle||d.title||"改善提案")+"</span>"+zbtns("title")+"</div>"+
-      '<div class="slide-body">'+
-        '<ul class="slide-points" '+blockStyle("points")+'>'+(points.length?points.map((k,i)=>"<li contenteditable=\"true\" data-slide-field=\"keyPoints-"+i+"\">"+esc(k)+"</li>").join(""):'<li>尚無重點</li>')+zbtns("points")+"</ul>"+
-        (benefits.length?'<div class="slide-benefits" '+blockStyle("benefits")+'>'+gaChartBlock(benefits, chartType)+zbtns("benefits")+"</div>":"")+
-      "</div>"+
+      '<ul class="slide-points" '+blockStyle("points")+'>'+(points.length?points.map((k,i)=>"<li contenteditable=\"true\" data-slide-field=\"keyPoints-"+i+"\">"+esc(k)+"</li>").join(""):'<li>尚無重點</li>')+zbtns("points")+"</ul>"+
+      (benefits.length?'<div class="slide-benefits" '+blockStyle("benefits")+'>'+gaChartBlock(benefits, chartType)+zbtns("benefits")+"</div>":"")+
       photoBlock+
       '<div class="slide-conclusion" '+blockStyle("conclusion")+'><span class="slide-field" contenteditable="true" data-slide-field="conclusion">'+esc(s.conclusion||"")+"</span>"+zbtns("conclusion")+"</div>"+
     "</div>";
