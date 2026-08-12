@@ -9,7 +9,7 @@ function gaChartBlock(benefits, chartType){
   }).join("");
   return '<div class="slide-chart">'+
     '<div class="sc-cap">效益達成度</div>'+
-    '<svg viewBox="0 0 280 150" class="sc-svg">'+svg+"</svg>"+
+    '<svg viewBox="0 0 280 150" preserveAspectRatio="xMinYMid meet" class="sc-svg">'+svg+"</svg>"+
     '<div class="sc-labels">'+labels+"</div>"+
   "</div>";
 }

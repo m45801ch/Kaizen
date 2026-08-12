@@ -590,5 +590,5 @@ function redrawSlideChart(){
   if(!box||!data.slide||!Array.isArray(data.slide.benefits)||!data.slide.benefits.length) return;
   const chartType=data.slide.chartType==="pie" ? "pie" : "bar";
   const svgEl=box.querySelector(".sc-svg");
-  if(svgEl) svgEl.outerHTML='<svg viewBox="0 0 280 150" class="sc-svg">'+gaChartSvg(data.slide.benefits, chartType).replace(/^[\s\S]*?<svg[^>]*>|<\/svg>[\s\S]*$/g,"")+"</svg>";
+  if(svgEl) svgEl.outerHTML='<svg viewBox="0 0 280 150" preserveAspectRatio="xMinYMid meet" class="sc-svg">'+gaChartSvg(data.slide.benefits, chartType).replace(/^[\s\S]*?<svg[^>]*>|<\/svg>[\s\S]*$/g,"")+"</svg>";
 }
