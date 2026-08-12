@@ -93,8 +93,8 @@ function init(){
         ? Math.round(297*96/25.4)
         : Math.round(210*96/25.4);
       const printH = landscape
-        ? Math.round((210-38)*96/25.4)
-        : Math.round((297-38)*96/25.4);
+        ? Math.round(210*96/25.4)
+        : Math.round(297*96/25.4);
       const rect=slide.getBoundingClientRect();
       if(rect.width>0){
         const designW=slide.clientWidth, designH=slide.clientHeight;
