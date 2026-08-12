@@ -25,7 +25,7 @@ export async function generateAll(){
   const btn=$("generateBtn");
   btn.disabled=true;
   btn.innerHTML='<span class="spinner"></span> 生成中…';
-  status("loading","正在同步產生正式表格與正式措辭，請稍候…");
+  status("loading","正在同步產生正式表格、正式措辭與一頁簡報，請稍候…");
   try{
     const results=await Promise.all([
       callForProvider(state.provider,key,model,buildPrompt(d)),
@@ -37,7 +37,7 @@ export async function generateAll(){
     if(results[1].after_conv!==undefined) $("conv-after").value=String(results[1].after_conv);
     CONV_IDS.forEach(id=>autoResize($(id)));
     const slideObj=results[2];
-    data.slide={ slideTitle:slideObj.slideTitle||d.title||"改善提案", keyPoints:Array.isArray(slideObj.keyPoints)?slideObj.keyPoints:[], benefits:Array.isArray(slideObj.benefits)?slideObj.benefits:[], conclusion:slideObj.conclusion||"" };
+    data.slide={ slideTitle:slideObj.slideTitle||d.title||"改善提案", keyPoints:Array.isArray(slideObj.keyPoints)?slideObj.keyPoints:[], benefits:Array.isArray(slideObj.benefits)?slideObj.benefits:[], chartType:slideObj.chartType==="pie"?"pie":"bar", conclusion:slideObj.conclusion||"" };
     saveForm();
     renderDocument();
     renderAllAnalysis();
