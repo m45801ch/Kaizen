@@ -100,21 +100,19 @@ function init(){
         const designW=slide.clientWidth, designH=slide.clientHeight;
         const photos=[...slide.querySelectorAll("[data-slide-pos]")];
         if(designW>0&&designH>0){
-          if(!landscape){
-            const originals=photos.map(photo=>({ photo, style:photo.getAttribute("style") }));
-            photos.forEach(photo=>{
-              const x=photo.offsetLeft, y=photo.offsetTop;
-              photo.style.left=(x/designW*100)+"%";
-              photo.style.top=(y/designH*100)+"%";
-              photo.style.right="auto";
+          const originals=photos.map(photo=>({ photo, style:photo.getAttribute("style") }));
+          photos.forEach(photo=>{
+            const x=photo.offsetLeft, y=photo.offsetTop;
+            photo.style.left=(x/designW*100)+"%";
+            photo.style.top=(y/designH*100)+"%";
+            photo.style.right="auto";
+          });
+          window.addEventListener("afterprint",()=>{
+            originals.forEach(({photo,style})=>{
+              if(style===null) photo.removeAttribute("style");
+              else photo.setAttribute("style",style);
             });
-            window.addEventListener("afterprint",()=>{
-              originals.forEach(({photo,style})=>{
-                if(style===null) photo.removeAttribute("style");
-                else photo.setAttribute("style",style);
-              });
-            },{once:true});
-          }
+          },{once:true});
           slide.style.setProperty("--slide-w", designW+"px");
           slide.style.setProperty("--slide-h", designH+"px");
           const scale=Math.min(1, printW/designW, printH/designH);
