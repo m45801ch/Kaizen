@@ -97,9 +97,12 @@ function init(){
         : Math.round(297*96/25.4);
       const rect=slide.getBoundingClientRect();
       if(rect.width>0){
-        const designW=slide.clientWidth;
-        if(designW>0){
+        const designW=slide.clientWidth, designH=slide.clientHeight;
+        if(designW>0&&designH>0){
           slide.style.setProperty("--slide-w", designW+"px");
+          slide.style.setProperty("--slide-h", designH+"px");
+          const scale=Math.min(1, printW/designW, printH/designH);
+          slide.style.setProperty("--slide-ps", String(scale));
         }
       }
     }
