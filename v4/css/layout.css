@@ -242,6 +242,7 @@ body.orient-landscape .benefit-col:last-child{border-bottom:none}
   .photo-grid{position:relative;min-height:0;overflow:visible;transform:scale(var(--ps,1));transform-origin:top left;height:calc(var(--ph,64px)*var(--ps,1))!important}
   .photo-thumb{position:absolute;border:1px solid var(--line);border-radius:6px;overflow:hidden;box-shadow:none}
   .photo-thumb img{object-fit:fill}
+  .doc:has(.slide-page) .slide-page{transform:scale(var(--slide-ps,1));transform-origin:top left}
   body.orient-landscape .doc:not(:has(.slide-page)){display:grid;grid-template-columns:1fr 300px;gap:16px;padding:12mm 14mm}
   body.orient-landscape .doc-header{grid-column:1/-1}
   body.orient-landscape .title-field{grid-column:1/-1;grid-row:2;margin-top:6px}

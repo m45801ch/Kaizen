@@ -84,6 +84,17 @@ function init(){
   }
   $("printBtn").addEventListener("click",()=>{
     document.title=($("f-title")&&$("f-title").value.trim())||"改善提案表";
+    const slide=$(".doc .slide-page");
+    if(slide){
+      const landscape=document.body.classList.contains("orient-landscape");
+      const printW = landscape
+        ? Math.round(Math.round(269*96/25.4))
+        : Math.round(Math.round(180*96/25.4));
+      const zoneW=slide.getBoundingClientRect().width;
+      let s = zoneW>0 ? printW/zoneW : 1;
+      s = Math.min(1, Math.max(0.3, s));
+      slide.style.setProperty("--slide-ps", String(s));
+    }
     window.print();
   });
   $("resetBtn").addEventListener("click",()=>{
