@@ -375,6 +375,7 @@ function bindDocument(){
     const id = handle.dataset.slideResize;
     const frame = handle.closest(".slide-photo-frame");
     if(!frame) return;
+    const pointerId = e.pointerId;
     const zone = frame.closest(".slide-page");
     const maxW = zone ? Math.max(40, zone.clientWidth - 24) : 800;
     const maxH = zone ? Math.max(40, zone.clientHeight - 24) : 600;
@@ -389,11 +390,17 @@ function bindDocument(){
     function onUp(){
       handle.removeEventListener("pointermove", onMove);
       handle.removeEventListener("pointerup", onUp);
+      handle.removeEventListener("pointercancel", onCancel);
+      handle.removeEventListener("lostpointercapture", onCancel);
+      if(handle.hasPointerCapture && handle.hasPointerCapture(pointerId)) handle.releasePointerCapture(pointerId);
       state.slidePhotoSize[id] = { w: frame.offsetWidth, h: frame.offsetHeight };
     }
-    handle.setPointerCapture(e.pointerId);
+    const onCancel = ()=>{ onUp(); };
+    handle.setPointerCapture(pointerId);
     handle.addEventListener("pointermove", onMove);
     handle.addEventListener("pointerup", onUp);
+    handle.addEventListener("pointercancel", onCancel);
+    handle.addEventListener("lostpointercapture", onCancel);
   });
 
   /* 簡報照片拖拽移動（Pointer Events） */
@@ -412,6 +419,7 @@ function bindDocument(){
       target.style.right="auto";
       target.style.left = curLeft+"px";
     }
+    const pointerId = e.pointerId;
     const maxX = page ? Math.max(0, page.clientWidth - target.offsetWidth) : 800;
     const maxY = page ? Math.max(0, page.clientHeight - target.offsetHeight) : 600;
     const startX = e.clientX, startY = e.clientY;
@@ -427,6 +435,7 @@ function bindDocument(){
       target.removeEventListener("pointerup", onUp);
       target.removeEventListener("pointercancel", onCancel);
       target.removeEventListener("lostpointercapture", onCancel);
+      if(target.hasPointerCapture && target.hasPointerCapture(pointerId)) target.releasePointerCapture(pointerId);
       state.slidePhotoPos[id] = { x: target.offsetLeft, y: target.offsetTop };
     }
     const onCancel = ()=>{ onUp(); };
