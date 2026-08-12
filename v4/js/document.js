@@ -374,7 +374,7 @@ function bindDocument(){
     const id = handle.dataset.slideResize;
     const frame = handle.closest(".slide-photo-frame");
     if(!frame) return;
-    const zone = frame.closest(".slide-photos");
+    const zone = frame.closest(".slide-page");
     const maxW = zone ? Math.max(40, zone.clientWidth - 24) : 800;
     const maxH = zone ? Math.max(40, zone.clientHeight - 24) : 600;
     const startX = e.clientX, startY = e.clientY;
@@ -398,14 +398,16 @@ function bindDocument(){
   /* 簡報照片拖拽移動（Pointer Events） */
   doc.addEventListener("pointerdown", e=>{
     if(getTemplate(state.template).id!=="slide") return;
+    if(e.button!==0) return;
     const target = e.target.closest("[data-slide-pos]");
     if(!target) return;
     if(e.target.closest("[data-slide-resize]")) return;
+    if(e.target.closest("[data-slide-z]")) return;
     e.preventDefault();
     const id = target.dataset.slidePos;
-    const zone = target.closest(".slide-photos");
-    const maxX = zone ? Math.max(0, zone.clientWidth - target.offsetWidth) : 800;
-    const maxY = zone ? Math.max(0, zone.clientHeight - target.offsetHeight) : 600;
+    const page = target.closest(".slide-page");
+    const maxX = page ? Math.max(0, page.clientWidth - target.offsetWidth) : 800;
+    const maxY = page ? Math.max(0, page.clientHeight - target.offsetHeight) : 600;
     const startX = e.clientX, startY = e.clientY;
     const baseX = target.offsetLeft, baseY = target.offsetTop;
     function onMove(ev){
@@ -427,6 +429,23 @@ function bindDocument(){
     target.addEventListener("pointerup", onUp);
     target.addEventListener("pointercancel", onCancel);
     target.addEventListener("lostpointercapture", onCancel);
+  });
+
+  /* 簡報照片調層（上移/下移一層） */
+  doc.addEventListener("click", e=>{
+    if(getTemplate(state.template).id!=="slide") return;
+    const btn = e.target.closest("[data-slide-z]");
+    if(!btn) return;
+    e.preventDefault();
+    e.stopPropagation();
+    const photo = btn.closest("[data-slide-pos]");
+    if(!photo) return;
+    const id = photo.dataset.slidePos;
+    const delta = parseInt(btn.dataset.slideZ, 10) || 0;
+    const cur = state.slideZ[id] || 5;
+    const next = Math.max(1, Math.min(99, cur + delta));
+    state.slideZ[id] = next;
+    photo.style.zIndex = String(next);
   });
 }
 
