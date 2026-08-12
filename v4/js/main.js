@@ -90,10 +90,11 @@ function init(){
       const printW = landscape
         ? Math.round(Math.round(269*96/25.4))
         : Math.round(Math.round(180*96/25.4));
-      const zoneW=slide.getBoundingClientRect().width;
-      if(zoneW>0){
-        slide.style.setProperty("--slide-w", zoneW+"px");
-        slide.style.setProperty("--slide-ps", String(printW/zoneW));
+      const rect=slide.getBoundingClientRect();
+      if(rect.width>0){
+        slide.style.setProperty("--slide-w", rect.width+"px");
+        slide.style.setProperty("--slide-h", rect.height+"px");
+        slide.style.setProperty("--slide-ps", String(printW/rect.width));
       }
     }
     window.print();
