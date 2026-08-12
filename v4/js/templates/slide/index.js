@@ -2,11 +2,11 @@
 import { esc } from "../shared.js";
 
 function gaGreen(v){
-  if(v>=80) return "#14532D";
-  if(v>=60) return "#166534";
-  if(v>=40) return "#22C55E";
-  if(v>=20) return "#4ADE80";
-  return "#86EFAC";
+  if(v>=80) return "#4ADE80";
+  if(v>=60) return "#6EE7A0";
+  if(v>=40) return "#86EFAC";
+  if(v>=20) return "#A7F3BE";
+  return "#BBF7D0";
 }
 function gaVal(b, len){
   const m = /(\d+(?:\.\d+)?)\s*%/.exec(String(b));
