@@ -184,7 +184,7 @@ input[type=range]{width:100%;accent-color:var(--primary);cursor:pointer}
 }
 .slide-page .slide-chart{border:1px solid rgba(255,255,255,.18);border-radius:10px;background:rgba(255,255,255,.06);padding:10px 12px;flex:1;display:flex;flex-direction:column;min-height:0}
 .slide-page .sc-cap{font-size:11px;letter-spacing:.16em;color:#93C5FD;font-weight:600;margin-bottom:4px}
-.slide-page .sc-row{display:flex;align-items:center;gap:4px;flex:1;min-height:0}
+.slide-page .sc-row{display:flex;align-items:center;gap:2px;flex:1;min-height:0}
 .slide-page .sc-svg{flex:0 0 auto;width:55%;min-width:0;height:auto;max-height:100%;display:block}
 .slide-page .sc-labels{display:flex;flex-direction:column;gap:6px;justify-content:flex-start;align-items:flex-start;flex:1;min-width:0}
 .slide-page .sc-label{font-size:12px;color:#E2E8F0;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
