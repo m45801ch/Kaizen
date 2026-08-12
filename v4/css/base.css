@@ -170,7 +170,7 @@ input[type=range]{width:100%;accent-color:var(--primary);cursor:pointer}
 .slide-page .slide-z-btns{position:absolute;top:2px;right:0;display:flex;gap:2px;z-index:2}
 .slide-page .slide-z-btns button{width:18px;height:18px;font-size:11px;line-height:1;border:1px solid rgba(255,255,255,.4);border-radius:4px;background:rgba(15,23,42,.8);color:#fff;cursor:pointer;padding:0}
 .slide-page .slide-photo-frame{position:relative;overflow:hidden;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18)}
-.slide-page .slide-photo-frame img{width:100%;height:100%;object-fit:contain;display:block}
+.slide-page .slide-photo-frame img{width:100%;height:100%;object-fit:fill;display:block}
 .slide-page .slide-photo-frame .resize-handle{position:absolute;right:0;bottom:0;width:14px;height:14px;cursor:nwse-resize;background:rgba(255,255,255,.5);border-top-left-radius:8px}
 .slide-page .slide-photo-tag{font-size:11px;letter-spacing:.14em;color:#93C5FD;font-weight:600}
 .slide-page{min-height:70vh}

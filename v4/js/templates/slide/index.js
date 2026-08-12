@@ -88,6 +88,7 @@ export default {
         '<span class="slide-z-btns">'+
           '<button type="button" data-slide-z="+1" title="上移一層">↑</button>'+
           '<button type="button" data-slide-z="-1" title="下移一層">↓</button>'+
+          '<button type="button" data-slide-reset-size title="恢復原尺寸">⟳</button>'+
         "</span>"+
       "</div>";
     };
