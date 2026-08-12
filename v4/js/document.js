@@ -482,7 +482,7 @@ function bindDocument(){
       if(found) p = found;
     });
     const w = 240;
-    const h = p && p.w && p.h ? Math.max(40, Math.round(240*(p.h/p.w))) : 40;
+    const h = p && p.w && p.h ? Math.max(40, Math.round(240*(p.h/p.w))) : 240;
     frame.style.width = w+"px";
     frame.style.height = h+"px";
     state.slidePhotoSize[id] = { w, h };
