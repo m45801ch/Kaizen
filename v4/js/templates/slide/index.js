@@ -73,7 +73,7 @@ export default {
     const s = d.slide || { slideTitle:"", keyPoints:[], benefits:[], conclusion:"" };
     const points = Array.isArray(s.keyPoints)?s.keyPoints:[];
     const benefits = Array.isArray(s.benefits)?s.benefits:[];
-    const chartType = s.chartType==="pie" ? "pie" : "bar";
+    const chartType = "pie";
     const photosBefore = (d.photos&&d.photos.before)||[];
     const photosAfter = (d.photos&&d.photos.after)||[];
     const slidePhoto = (p, label, side)=>{

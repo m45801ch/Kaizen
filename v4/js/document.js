@@ -588,7 +588,7 @@ function bindDocument(){
 function redrawSlideChart(){
   const box=document.querySelector("#doc .slide-benefits");
   if(!box||!data.slide||!Array.isArray(data.slide.benefits)||!data.slide.benefits.length) return;
-  const chartType=data.slide.chartType==="pie" ? "pie" : "bar";
+  const chartType = "pie";
   const svgEl=box.querySelector(".sc-svg");
   if(svgEl) svgEl.outerHTML='<svg viewBox="0 0 280 150" preserveAspectRatio="xMinYMid meet" class="sc-svg">'+gaChartSvg(data.slide.benefits, chartType).replace(/^[\s\S]*?<svg[^>]*>|<\/svg>[\s\S]*$/g,"")+"</svg>";
 }
