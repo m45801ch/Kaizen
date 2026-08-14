@@ -210,6 +210,12 @@ body.orient-landscape .benefit-box{grid-column:2;grid-row:3;margin-top:6px;align
 body.orient-landscape .benefit-cols{grid-template-columns:1fr}
 body.orient-landscape .benefit-col{border-right:none;border-bottom:1px solid var(--line)}
 body.orient-landscape .benefit-col:last-child{border-bottom:none}
+/* 工安橫向：危險等級在上、改善前/後與預期效益並排 */
+body.orient-landscape .ga-stripe{grid-column:1/-1}
+body.orient-landscape .ga-level-row{grid-column:1;grid-row:3;margin-top:6px}
+body.orient-landscape .kaizen-pair.ga{grid-column:1;grid-row:4;margin-top:6px}
+body.orient-landscape .ga-benefit-box{grid-column:2;grid-row:3/5;margin-top:6px;align-self:stretch}
+body.orient-landscape .ga-benefit-cols{grid-template-columns:1fr}
 
 /* ---------- 響應式 ---------- */
 @media screen and (max-width:980px){
@@ -252,6 +258,11 @@ body.orient-landscape .benefit-col:last-child{border-bottom:none}
   body.orient-landscape .benefit-cols{grid-template-columns:1fr!important}
   body.orient-landscape .benefit-col{border-right:none!important;border-bottom:1px solid var(--line)!important}
   body.orient-landscape .benefit-col:last-child{border-right:none!important;border-bottom:none!important}
+  body.orient-landscape .ga-stripe{grid-column:1/-1!important}
+  body.orient-landscape .ga-level-row{grid-column:1;grid-row:3;margin-top:6px!important}
+  body.orient-landscape .kaizen-pair.ga{grid-column:1;grid-row:4;margin-top:6px!important}
+  body.orient-landscape .ga-benefit-box{grid-column:2;grid-row:3/5;margin-top:6px!important;align-self:stretch!important}
+  body.orient-landscape .ga-benefit-cols{grid-template-columns:1fr!important}
   body.orient-landscape .doc-title{font-size:24px}
   .photo-thumb,.al-line,.benefit-col{page-break-inside:avoid}
   .kaizen-box .box-cap,.benefit-box .box-cap{page-break-after:avoid}
