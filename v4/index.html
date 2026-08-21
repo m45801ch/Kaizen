@@ -17,7 +17,7 @@
   <!-- ===== 左側：三頁籤 ===== -->
   <aside>
     <div class="brand">
-      <div class="brand-badge">K4</div>
+      <button type="button" class="brand-badge api-secret-trigger" id="apiSecretTrigger" aria-label="開啟設定" title="設定">K4</button>
       <div>
         <div class="brand-kicker">KAIZEN V4 · MULTI-TEMPLATE</div>
         <div class="brand-title serif">改善提案生成器</div>
@@ -73,37 +73,6 @@
 
     <!-- 通用設定頁籤 -->
     <section class="tab-panel" id="tab-settings">
-      <div class="panel collapsed">
-        <div class="panel-head collapsible" role="button" tabindex="0" aria-expanded="false" aria-controls="apiPanelBody"><span class="bar"></span>API 設定<span class="chevron">▾</span></div>
-        <div class="panel-body" id="apiPanelBody">
-          <div class="field">
-            <label for="providerSelect">AI 供應商</label>
-            <select id="providerSelect">
-              <option value="gemini">Google Gemini</option>
-              <option value="openai">OpenAI</option>
-              <option value="openrouter">OpenRouter</option>
-              <option value="groq">Groq</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="apiKey">API Key</label>
-            <div class="key-wrap">
-              <input type="password" id="apiKey" autocomplete="off" spellcheck="false" placeholder="貼上你的 API Key…">
-              <button type="button" class="toggle" id="toggleKey">顯示</button>
-            </div>
-            <div class="hint" id="keyHint"></div>
-          </div>
-          <div class="field">
-            <label for="model">模型</label>
-            <div class="key-wrap">
-              <select id="model"></select>
-            </div>
-            <div class="hint" id="modelHint"></div>
-          </div>
-          <button type="button" class="btn btn-outline btn-sm" id="refreshModelsBtn" style="width:100%">重新載入模型清單 ⟳</button>
-        </div>
-      </div>
-
       <div class="panel">
         <div class="panel-head"><span class="bar"></span>圖片壓縮</div>
         <label class="check-row" style="margin-top:0">
@@ -151,6 +120,46 @@
       </div>
     </section>
   </aside>
+
+  <!-- API 設定：預設隱藏，僅由左上角徽章開啟 -->
+  <div class="api-secret-backdrop" id="apiSecretBackdrop" hidden>
+    <section class="api-secret-dialog" role="dialog" aria-modal="true" aria-labelledby="apiSecretTitle">
+      <div class="api-secret-dialog-head">
+        <div class="api-secret-dialog-title" id="apiSecretTitle">設定</div>
+        <button type="button" class="api-secret-close" id="apiSecretClose" aria-label="關閉設定">×</button>
+      </div>
+      <div class="panel" id="apiPanel">
+        <div class="panel-head"><span class="bar"></span>API 設定</div>
+        <div class="panel-body" id="apiPanelBody">
+          <div class="field">
+            <label for="providerSelect">AI 供應商</label>
+            <select id="providerSelect">
+              <option value="gemini">Google Gemini</option>
+              <option value="openai">OpenAI</option>
+              <option value="openrouter">OpenRouter</option>
+              <option value="groq">Groq</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="apiKey">API Key</label>
+            <div class="key-wrap">
+              <input type="password" id="apiKey" autocomplete="off" spellcheck="false" placeholder="貼上你的 API Key…">
+              <button type="button" class="toggle" id="toggleKey">顯示</button>
+            </div>
+            <div class="hint" id="keyHint"></div>
+          </div>
+          <div class="field">
+            <label for="model">模型</label>
+            <div class="key-wrap">
+              <select id="model"></select>
+            </div>
+            <div class="hint" id="modelHint"></div>
+          </div>
+          <button type="button" class="btn btn-outline btn-sm" id="refreshModelsBtn" style="width:100%">重新載入模型清單 ⟳</button>
+        </div>
+      </div>
+    </section>
+  </div>
 
   <!-- ===== 右側：文件區 ===== -->
   <main>
