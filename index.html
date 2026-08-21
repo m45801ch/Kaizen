@@ -51,6 +51,12 @@
     color:#fff;display:flex;align-items:center;justify-content:center;
     font-size:12px;font-weight:700;
   }
+  .api-secret-trigger{
+    border:0;padding:0;font:inherit;cursor:pointer;appearance:none;
+    transition:transform .16s,box-shadow .16s;
+  }
+  .api-secret-trigger:hover{transform:translateY(-1px);box-shadow:0 3px 10px rgba(28,25,23,.18)}
+  .api-secret-trigger:focus-visible{outline:3px solid rgba(5,150,105,.3);outline-offset:3px}
   .brand-kicker{font-size:10px;letter-spacing:.18em;color:var(--muted);font-weight:500}
   .brand-title{font-size:18px;font-weight:700;letter-spacing:-.02em}
   .brand-sub{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.7}
@@ -65,6 +71,25 @@
   .chevron{margin-left:auto;font-size:12px;color:var(--muted);transition:transform .18s}
   .panel.collapsed .panel-body{display:none}
   .panel.collapsed .chevron{transform:rotate(-90deg)}
+  .api-secret-backdrop{
+    position:fixed;inset:0;z-index:1000;display:flex;align-items:flex-start;justify-content:flex-start;
+    padding:20px;background:rgba(28,25,23,.28);backdrop-filter:blur(2px);
+  }
+  .api-secret-backdrop[hidden]{display:none}
+  .api-secret-dialog{
+    width:min(360px,calc(100vw - 40px));max-height:calc(100vh - 40px);overflow:auto;
+    background:var(--card);border:1px solid var(--line-dark);border-radius:14px;
+    box-shadow:0 18px 55px rgba(28,25,23,.22);padding:16px;
+  }
+  .api-secret-dialog-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+  .api-secret-dialog-title{font-size:13px;font-weight:700;letter-spacing:.05em;color:var(--text);flex:1}
+  .api-secret-close{
+    width:28px;height:28px;border:1px solid var(--line-dark);border-radius:8px;background:#fff;
+    color:var(--muted);font-size:18px;line-height:1;cursor:pointer;
+  }
+  .api-secret-close:hover{color:var(--text);border-color:var(--primary);background:var(--primary-soft)}
+  .api-secret-close:focus-visible{outline:3px solid rgba(5,150,105,.25);outline-offset:2px}
+  body.api-dialog-open{overflow:hidden}
 
   .field{margin-bottom:14px}
   .field:last-child{margin-bottom:0}
@@ -336,7 +361,7 @@
 
   @media print{
     *{-webkit-print-color-adjust:exact;print-color-adjust:exact!important}
-    aside,.toolbar,footer{display:none!important}
+    aside,.toolbar,footer,.api-secret-backdrop{display:none!important}
     body{background:#fff}
     main{padding:0}
     .doc{border:none;box-shadow:none;padding:12mm 12mm;max-width:none}
@@ -383,7 +408,7 @@
   <!-- ===== 左側：API 設定 ===== -->
   <aside>
     <div class="brand">
-      <div class="brand-badge">AI</div>
+      <button type="button" class="brand-badge api-secret-trigger" id="apiSecretTrigger" aria-label="開啟設定" title="設定">AI</button>
       <div>
         <div class="brand-kicker">KAIZEN V3.5 · AI 版</div>
         <div class="brand-title serif">改善提案生成器</div>
@@ -391,42 +416,6 @@
     </div>
     <div class="brand-sub">填寫口語描述，AI 一次生成完整改善提案並自動填入表單。所有資料僅存於你的瀏覽器，不會上傳到第三方伺服器。</div>
 
-    <div class="panel" id="apiPanel">
-      <div class="panel-head collapsible" id="apiPanelHead" role="button" tabindex="0" title="點擊收合／展開">
-        <span class="bar"></span>API 設定
-        <span class="chevron" id="apiChevron">▾</span>
-      </div>
-      <div class="panel-body">
-        <div class="field">
-          <label for="providerSelect">AI 供應商</label>
-          <select id="providerSelect">
-            <option value="gemini">Google Gemini</option>
-            <option value="openai">OpenAI</option>
-            <option value="openrouter">OpenRouter</option>
-            <option value="groq">Groq</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label for="apiKey">API Key</label>
-          <div class="key-wrap">
-            <input type="password" id="apiKey" autocomplete="off" spellcheck="false"
-                   placeholder="貼上你的 API Key…">
-            <button type="button" class="toggle" id="toggleKey">顯示</button>
-          </div>
-          <div class="hint" id="keyHint"></div>
-        </div>
-
-        <div class="field">
-          <label for="model">模型</label>
-          <div class="model-row">
-            <select id="model"></select>
-            <button type="button" id="refreshModelsBtn" title="重新載入全部可用模型">⟳</button>
-          </div>
-          <div class="hint" id="modelHint"></div>
-        </div>
-      </div>
-    </div>
 
     <div class="panel">
       <div class="panel-head"><span class="bar"></span>AI 一鍵生成</div>
@@ -484,6 +473,49 @@
       </div>
     </div>
   </aside>
+
+  <!-- API 設定：預設隱藏，僅由左上角徽章開啟 -->
+  <div class="api-secret-backdrop" id="apiSecretBackdrop" hidden>
+    <section class="api-secret-dialog" role="dialog" aria-modal="true" aria-labelledby="apiSecretTitle">
+      <div class="api-secret-dialog-head">
+        <div class="api-secret-dialog-title" id="apiSecretTitle">設定</div>
+        <button type="button" class="api-secret-close" id="apiSecretClose" aria-label="關閉設定">×</button>
+      </div>
+      <div class="panel" id="apiPanel">
+        <div class="panel-head"><span class="bar"></span>API 設定</div>
+        <div class="panel-body">
+          <div class="field">
+            <label for="providerSelect">AI 供應商</label>
+            <select id="providerSelect">
+              <option value="gemini">Google Gemini</option>
+              <option value="openai">OpenAI</option>
+              <option value="openrouter">OpenRouter</option>
+              <option value="groq">Groq</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="apiKey">API Key</label>
+            <div class="key-wrap">
+              <input type="password" id="apiKey" autocomplete="off" spellcheck="false"
+                     placeholder="貼上你的 API Key…">
+              <button type="button" class="toggle" id="toggleKey">顯示</button>
+            </div>
+            <div class="hint" id="keyHint"></div>
+          </div>
+
+          <div class="field">
+            <label for="model">模型</label>
+            <div class="model-row">
+              <select id="model"></select>
+              <button type="button" id="refreshModelsBtn" title="重新載入全部可用模型">⟳</button>
+            </div>
+            <div class="hint" id="modelHint"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
 
   <!-- ===== 右側：提案表單 ===== -->
   <main>
@@ -1427,8 +1459,8 @@ function clearForm(){
     state.provider = next;
     localStorage.setItem(STORE.provider, state.provider);
     renderProvider();
-    apiCollapse.setCollapsed(true);
     if (state.keys[state.provider]) refreshModels();
+
   });
 
   var refreshTimer;
@@ -1501,7 +1533,32 @@ function clearForm(){
     render();
     return { setCollapsed: function(v){ collapseState[panelId] = !!v; render(); } };
   }
-  var apiCollapse = setupCollapse("apiPanel", "apiPanelHead", "apiChevron", true);
+  function setupApiSecretDialog(){
+    var trigger = $("apiSecretTrigger"), backdrop = $("apiSecretBackdrop"), close = $("apiSecretClose");
+    if (!trigger || !backdrop || !close) return;
+    var lastFocus = null;
+    function setOpen(open){
+      backdrop.hidden = !open;
+      document.body.classList.toggle("api-dialog-open", open);
+      trigger.setAttribute("aria-expanded", open ? "true" : "false");
+      if (open){
+        lastFocus = document.activeElement;
+        close.focus();
+      } else if (lastFocus && typeof lastFocus.focus === "function"){
+        lastFocus.focus();
+      }
+    }
+    trigger.setAttribute("aria-expanded", "false");
+    trigger.addEventListener("click", function(){ setOpen(true); });
+    close.addEventListener("click", function(){ setOpen(false); });
+    backdrop.addEventListener("click", function(e){
+      if (e.target === backdrop) setOpen(false);
+    });
+    document.addEventListener("keydown", function(e){
+      if (e.key === "Escape" && !backdrop.hidden) setOpen(false);
+    });
+  }
+  setupApiSecretDialog();
   var compressCollapse = setupCollapse("compressPanel", "compressPanelHead", "compressChevron", true);
 
   $els.printBtn.addEventListener("click", function(){
