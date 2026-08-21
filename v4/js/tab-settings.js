@@ -179,6 +179,31 @@ export function initSettings(){
     sync();
   });
 
+  const trigger = $("apiSecretTrigger"), backdrop = $("apiSecretBackdrop"), close = $("apiSecretClose");
+  if(trigger && backdrop && close){
+    let lastFocus = null;
+    const setOpen = open => {
+      backdrop.hidden = !open;
+      document.body.classList.toggle("api-dialog-open", open);
+      trigger.setAttribute("aria-expanded", open ? "true" : "false");
+      if(open){
+        lastFocus = document.activeElement;
+        close.focus();
+      }else if(lastFocus && typeof lastFocus.focus === "function"){
+        lastFocus.focus();
+      }
+    };
+    trigger.setAttribute("aria-expanded", "false");
+    trigger.addEventListener("click", () => setOpen(true));
+    close.addEventListener("click", () => setOpen(false));
+    backdrop.addEventListener("click", e => {
+      if(e.target === backdrop) setOpen(false);
+    });
+    document.addEventListener("keydown", e => {
+      if(e.key === "Escape" && !backdrop.hidden) setOpen(false);
+    });
+  }
+
   initLogo();
   renderProvider();
   if(state.keys[state.provider]) setTimeout(refreshModels,300);
